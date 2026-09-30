@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "387217687563",
+    "project_id": "lifesync-84dc1",
+    "storage_bucket": "lifesync-84dc1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387217687563:android:0f1f75027f7c899bfdf30e",
+        "android_client_info": {
+          "package_name": "com.lifesync.task.routine.planner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBigOANZajxxCqGRe3Xz1GSTKbu5wxz7Ng"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

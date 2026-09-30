@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">LifeSync</string>
+    <string name="nav_home">ホーム</string>
+    <string name="nav_tasks">タスク</string>
+    <string name="nav_routines">ルーティン</string>
+    <string name="nav_goals">目標</string>
+    <string name="good_morning">おはようございます、</string>
+    <string name="todays_overview">今日の概要</string>
+    <string name="up_next">次へ</string>
+    <string name="todays_routines">今日のルーティン</string>
+    <string name="your_goals">あなたの目標</string>
+    <string name="settings">設定</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="search_tasks">タスクを検索…</string>
+    <string name="add_task">タスクを追加</string>
+    <string name="add_routine">ルーティンを追加</string>
+    <string name="add_goal">目標を追加</string>
+    <string name="completed">完了</string>
+    <string name="status_in_progress">進行中</string>
+    <string name="save_changes">変更を保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="delete">削除</string>
+    <string name="edit">編集</string>
+</resources>

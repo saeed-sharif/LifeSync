@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Life Planner</string>
+    <string name="nav_home">Startseite</string>
+    <string name="nav_tasks">Aufgaben</string>
+    <string name="nav_routines">Routinen</string>
+    <string name="nav_goals">Ziele</string>
+    <string name="good_morning">Guten Morgen,</string>
+    <string name="todays_overview">Tagesübersicht</string>
+    <string name="up_next">Als Nächstes</string>
+    <string name="todays_routines">Heutige Routinen</string>
+    <string name="your_goals">Ihre Ziele</string>
+    <string name="settings">Einstellungen</string>
+    <string name="privacy_policy">Datenschutzrichtlinie</string>
+    <string name="search_tasks">Aufgaben suchen…</string>
+    <string name="add_task">Aufgabe hinzufügen</string>
+    <string name="add_routine">Routine hinzufügen</string>
+    <string name="add_goal">Ziel hinzufügen</string>
+    <string name="completed">Abgeschlossen</string>
+    <string name="status_in_progress">In Bearbeitung</string>
+    <string name="save_changes">Änderungen speichern</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="delete">Löschen</string>
+    <string name="edit">Bearbeiten</string>
+</resources>

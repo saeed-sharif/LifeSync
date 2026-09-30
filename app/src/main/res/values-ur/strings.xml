@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">لائف سنک</string>
+    <string name="nav_home">ہوم</string>
+    <string name="nav_tasks">کام</string>
+    <string name="nav_routines">روٹینز</string>
+    <string name="nav_goals">اہداف</string>
+    <string name="good_morning">صبح بخیر،</string>
+    <string name="todays_overview">آج کا جائزہ</string>
+    <string name="up_next">اگلا کام</string>
+    <string name="todays_routines">آج کی روٹینز</string>
+    <string name="your_goals">آپ کے اہداف</string>
+    <string name="settings">سیٹنگز</string>
+    <string name="privacy_policy">پرائیویسی پالیسی</string>
+    <string name="search_tasks">کام تلاش کریں…</string>
+    <string name="add_task">نیا کام شامل کریں</string>
+    <string name="add_routine">نئی روٹین شامل کریں</string>
+    <string name="add_goal">نیا ہدف شامل کریں</string>
+    <string name="completed">مکمل</string>
+    <string name="status_in_progress">جاری ہے</string>
+    <string name="save_changes">تبدیلیاں محفوظ کریں</string>
+    <string name="cancel">منسوخ کریں</string>
+    <string name="delete">حذف کریں</string>
+    <string name="edit">ترمیم کریں</string>
+</resources>

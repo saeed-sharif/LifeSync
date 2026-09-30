@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">لايف سينك</string>
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_tasks">المهام</string>
+    <string name="nav_routines">الروتين</string>
+    <string name="nav_goals">الأهداف</string>
+    <string name="good_morning">صباح الخير،</string>
+    <string name="todays_overview">نظرة عامة اليوم</string>
+    <string name="up_next">القادم</string>
+    <string name="todays_routines">روتين اليوم</string>
+    <string name="your_goals">أهدافك</string>
+    <string name="settings">الإعدادات</string>
+    <string name="privacy_policy">سياسة الخصوصية</string>
+    <string name="search_tasks">البحث في المهام…</string>
+    <string name="add_task">إضافة مهمة</string>
+    <string name="add_routine">إضافة روتين</string>
+    <string name="add_goal">إضافة هدف</string>
+    <string name="completed">مكتمل</string>
+    <string name="status_in_progress">قيد التقدم</string>
+    <string name="save_changes">حفظ التغييرات</string>
+    <string name="cancel">إلغاء</string>
+    <string name="delete">حذف</string>
+    <string name="edit">تعديل</string>
+</resources>

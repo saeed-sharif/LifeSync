@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - LifeSync</title>
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-light: #F0EFFF;
+            --text-dark: #191528;
+            --text-gray: #6B677B;
+            --bg-light: #F8F7FF;
+            --card-bg: #FFFFFF;
+            --border-color: #E2E0F0;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 36px 32px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(108, 99, 255, 0.08);
+            border: 1px solid var(--border-color);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 24px;
+            margin-bottom: 28px;
+        }
+        .app-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+        .badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+        .section {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: #FAFAFE;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title span {
+            color: var(--primary);
+        }
+        p, ul {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+        ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+        .highlight-box {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .highlight-box p {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px 18px;
+            }
+            .app-title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="app-title">LifeSync</div>
+        <div class="subtitle">Official Privacy Policy</div>
+        <div class="badge">Effective Date: 2026 • 100% Offline & Private</div>
+    </div>
+
+    <div class="highlight-box">
+        <p>🔒 Privacy Summary: LifeSync is an offline-first productivity app. Your tasks, habits, routines, and goals are stored 100% locally on your device. We do not collect, transmit, share, or monetize any of your personal data.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>1.</span> Local Data Storage & Security</div>
+        <p>All data created within LifeSync—including tasks, habits, routines, goals, task descriptions, categories, and completion timestamps—is stored locally on your device in an encrypted SQLite database managed via Android Room. No data is transmitted to, stored on, or backed up to any external cloud servers by us.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>2.</span> System Permissions & Disclosures</div>
+        <p>LifeSync requests specific Android system permissions strictly to deliver core offline productivity features:</p>
+        <ul>
+            <li><strong>Post Notifications (android.permission.POST_NOTIFICATIONS):</strong> Used exclusively to present scheduled task alerts, habit reminders, and interactive actions ("Mark Done" and "Snooze").</li>
+            <li><strong>Exact Alarms (android.permission.SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM):</strong> Required to trigger reminders at the exact minute set by the user, even when the screen is off or the device is idle.</li>
+            <li><strong>Boot Completed (android.permission.RECEIVE_BOOT_COMPLETED):</strong> Used solely to reschedule your pending task and routine alarms automatically whenever your device restarts.</li>
+            <li><strong>Ignore Battery Optimizations (android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS):</strong> Allows you to prevent the OS battery saver from stopping scheduled habit alarms when LifeSync is closed.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>3.</span> Daily Reset & Background Operations</div>
+        <p>LifeSync uses Android WorkManager to schedule a lightweight daily reset process at midnight. This task resets daily habit completion statuses and calculates streak counters 100% locally on your device without needing any internet connection.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>4.</span> User Profile & App Preferences</div>
+        <p>User profile information entered during onboarding (Name and Avatar preference) along with app preferences (Selected Theme Mode and Language choice) are stored locally in Android SharedPreferences. This information never leaves your device and is used solely to personalize the user interface.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>5.</span> Zero Analytics & Third-Party Tracking</div>
+        <p>LifeSync does not integrate third-party analytics SDKs, user tracking services, ad networks, or data brokers. We do not track user behavior, monitor app usage, or display advertisements.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>6.</span> Data Control & Deletion</div>
+        <p>You retain full ownership of your data at all times. Deleting a task, habit, or goal permanently removes it from your local database immediately. Uninstalling the LifeSync app completely and permanently wipes all local database files from your device.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>7.</span> Global Language Support</div>
+        <p>LifeSync is fully localized and available in 13 languages: English, Hindi, Urdu, Arabic, Spanish, French, German, Turkish, Portuguese, Italian, Russian, Chinese, and Japanese.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>8.</span> Policy Updates & Contact Information</div>
+        <p>We may update this Privacy Policy from time to time. Any changes will be reflected immediately in this policy document and within the app's Privacy Policy screen. For any questions or suggestions regarding this Privacy Policy, please contact us via our developer support email on Google Play Store.</p>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 LifeSync. All rights reserved. • Built for Privacy & Focus.
+    </div>
+</div>
+
+</body>
+</html>

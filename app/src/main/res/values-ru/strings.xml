@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">LifeSync</string>
+    <string name="nav_home">Главная</string>
+    <string name="nav_tasks">Задачи</string>
+    <string name="nav_routines">Ритуалы</string>
+    <string name="nav_goals">Цели</string>
+    <string name="good_morning">Доброе утро,</string>
+    <string name="todays_overview">Обзор на сегодня</string>
+    <string name="up_next">Далее</string>
+    <string name="todays_routines">Привычки на сегодня</string>
+    <string name="your_goals">Ваши цели</string>
+    <string name="settings">Настройки</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="search_tasks">Поиск задач…</string>
+    <string name="add_task">Добавить задачу</string>
+    <string name="add_routine">Добавить привычку</string>
+    <string name="add_goal">Добавить цель</string>
+    <string name="completed">Завершено</string>
+    <string name="status_in_progress">В процессе</string>
+    <string name="save_changes">Сохранить изменения</string>
+    <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
+    <string name="edit">Редактировать</string>
+</resources>

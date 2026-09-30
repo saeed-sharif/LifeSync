@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">लाइफसिंक</string>
+    <string name="nav_home">होम</string>
+    <string name="nav_tasks">कार्य</string>
+    <string name="nav_routines">दिनचर्या</string>
+    <string name="nav_goals">लक्ष्य</string>
+    <string name="good_morning">सुप्रभात,</string>
+    <string name="todays_overview">आज का विवरण</string>
+    <string name="up_next">अगला कार्य</string>
+    <string name="todays_routines">आज की दिनचर्या</string>
+    <string name="your_goals">आपके लक्ष्य</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
+    <string name="search_tasks">कार्य खोजें…</string>
+    <string name="add_task">कार्य जोड़ें</string>
+    <string name="add_routine">दिनचर्या जोड़ें</string>
+    <string name="add_goal">लक्ष्य जोड़ें</string>
+    <string name="completed">पूरा हुआ</string>
+    <string name="status_in_progress">प्रगति पर है</string>
+    <string name="save_changes">बदलाव सहेजें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="delete">हटाएं</string>
+    <string name="edit">संपादित करें</string>
+</resources>
