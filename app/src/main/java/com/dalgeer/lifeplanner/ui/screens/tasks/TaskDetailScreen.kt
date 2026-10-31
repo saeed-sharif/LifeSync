@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.*
@@ -22,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,7 +80,7 @@ fun TaskDetailScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(White)
+                        .background(CardSurface)
                         .border(1.dp, DividerColor, CircleShape)
                         .clickable { onBack() },
                     contentAlignment = Alignment.Center
@@ -111,11 +111,12 @@ fun TaskDetailScreen(
                 }
                 DropdownMenu(
                     expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
+                    onDismissRequest = { showMenu = false },
+                    modifier = Modifier.background(CardSurface)
                 ) {
                     if (!isCompleted) {
                         DropdownMenuItem(
-                            text = { Text("Edit Task") },
+                            text = { Text("Edit Task", color = TextDark) },
                             onClick = {
                                 showMenu = false
                                 showEditSheet = true
@@ -143,13 +144,13 @@ fun TaskDetailScreen(
         ) {
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Completed Banner Alert (shown at top if task is completed)
+            // Completed Banner Alert
             if (isCompleted) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFECFDF5),
-                    border = BorderStroke(1.dp, Color(0xFFA7F3D0))
+                    color = if (isDarkTheme) Color(0xFF064E3B).copy(alpha = 0.35f) else Color(0xFFECFDF5),
+                    border = BorderStroke(1.dp, if (isDarkTheme) SuccessGreen.copy(alpha = 0.4f) else Color(0xFFA7F3D0))
                 ) {
                     Row(
                         modifier = Modifier.padding(14.dp),
@@ -159,13 +160,13 @@ fun TaskDetailScreen(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF10B981)),
+                                .background(SuccessGreen),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null,
-                                tint = White,
+                                tint = Color.White,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -175,13 +176,13 @@ fun TaskDetailScreen(
                                 text = "Task Completed ✓",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF065F46)
+                                color = if (isDarkTheme) SuccessGreenDark else Color(0xFF065F46)
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = "Great job! This task has been marked as finished.",
                                 fontSize = 11.sp,
-                                color = Color(0xFF047857)
+                                color = if (isDarkTheme) SuccessGreenDark.copy(alpha = 0.85f) else Color(0xFF047857)
                             )
                         }
                     }
@@ -200,7 +201,7 @@ fun TaskDetailScreen(
                         spotColor = PrimaryPurple.copy(alpha = 0.12f)
                     ),
                 shape = RoundedCornerShape(20.dp),
-                color = White
+                color = CardSurface
             ) {
                 Row(
                     modifier = Modifier.padding(18.dp),
@@ -249,7 +250,7 @@ fun TaskDetailScreen(
                     }
 
                     Surface(
-                        color = if (isHigh) LightRed else Color(0xFFF1F5F9),
+                        color = if (isHigh) LightRed else SurfaceVariantColor,
                         shape = RoundedCornerShape(10.dp)
                     ) {
                         Text(
@@ -269,7 +270,7 @@ fun TaskDetailScreen(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                color = White,
+                color = CardSurface,
                 border = BorderStroke(1.dp, DividerColor)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
@@ -279,159 +280,85 @@ fun TaskDetailScreen(
                         label = "Date",
                         value = task.date
                     )
-
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = DividerColor)
 
                     // 2. Time
                     DetailRowItem(
-                        icon = Icons.Outlined.AccessTime,
+                        icon = Icons.Outlined.Schedule,
                         label = "Time",
-                        value = task.time,
-                        extraBadge = "15 min before"
+                        value = task.time
                     )
-
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = DividerColor)
 
                     // 3. Repeat
                     DetailRowItem(
-                        icon = Icons.Outlined.Sync,
+                        icon = Icons.Outlined.Autorenew,
                         label = "Repeat",
                         value = task.repeatOption
                     )
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = DividerColor)
-
-                    // 4. Priority
-                    DetailRowItem(
-                        icon = Icons.Outlined.FormatSize,
-                        label = "Priority",
-                        value = task.priority.name,
-                        valueColor = when (task.priority) {
-                            TaskPriority.High -> ErrorRed
-                            TaskPriority.Medium -> Color(0xFFF59E0B)
-                            TaskPriority.Low -> Color(0xFF3B82F6)
-                        }
-                    )
-
                     if (task.notes.isNotBlank()) {
                         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = DividerColor)
-
-                        // 5. Notes
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                        // 4. Notes
+                        Row(verticalAlignment = Alignment.Top) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(IconBoxBg),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Description,
+                                    imageVector = Icons.Outlined.Notes,
                                     contentDescription = null,
                                     tint = PrimaryPurple,
                                     modifier = Modifier.size(18.dp)
                                 )
-                                Spacer(modifier = Modifier.width(10.dp))
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(text = "Notes", fontSize = 11.sp, color = TextGray)
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "Notes",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = TextGray
+                                    text = task.notes,
+                                    fontSize = 14.sp,
+                                    color = TextDark,
+                                    lineHeight = 20.sp
                                 )
                             }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = task.notes,
-                                fontSize = 14.sp,
-                                color = TextDark,
-                                lineHeight = 20.sp
-                            )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+            Spacer(modifier = Modifier.height(32.dp))
 
-        // Bottom Action Bar
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = White,
-            shadowElevation = 8.dp
-        ) {
-            if (isCompleted) {
-                // If completed: NO Edit button, single button to Mark Incomplete
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = PaddingLarge, vertical = 12.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = { viewModel.toggleTaskStatus(task.id) },
-                        modifier = Modifier.fillMaxWidth(),
+            // Toggle Mark Complete Button
+            Button(
+                onClick = { viewModel.toggleTaskStatus(task.id) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .shadow(
+                        elevation = 6.dp,
                         shape = RoundedCornerShape(16.dp),
-                        contentPadding = PaddingValues(vertical = 14.dp)
-                    ) {
-                        Text(
-                            text = "Mark as Incomplete",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = TextDark
-                        )
-                    }
-                }
-            } else {
-                // If pending: Show Edit button and Mark Complete button
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = PaddingLarge, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Button(
-                        onClick = { showEditSheet = true },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF0EFFF)),
-                        shape = RoundedCornerShape(16.dp),
-                        contentPadding = PaddingValues(vertical = 14.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.Edit,
-                                contentDescription = null,
-                                tint = PrimaryPurple,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Edit",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = PrimaryPurple
-                            )
-                        }
-                    }
-
-                    Button(
-                        onClick = { viewModel.toggleTaskStatus(task.id) },
-                        modifier = Modifier.weight(1.5f),
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
-                        shape = RoundedCornerShape(16.dp),
-                        contentPadding = PaddingValues(vertical = 14.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                tint = White,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Mark Complete",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = White
-                            )
-                        }
-                    }
-                }
+                        ambientColor = PrimaryPurple.copy(alpha = 0.3f),
+                        spotColor = PrimaryPurple.copy(alpha = 0.3f)
+                    ),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isCompleted) SurfaceVariantColor else PrimaryPurple
+                )
+            ) {
+                Text(
+                    text = if (isCompleted) "Mark as Incomplete" else "Mark as Complete ✓",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isCompleted) TextDark else Color.White
+                )
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 
@@ -448,66 +375,31 @@ fun TaskDetailScreen(
 }
 
 @Composable
-private fun DetailRowItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+fun DetailRowItem(
+    icon: ImageVector,
     label: String,
-    value: String,
-    valueColor: Color = TextDark,
-    extraBadge: String? = null
+    value: String
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = PrimaryPurple,
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = TextGray,
-            modifier = Modifier.width(70.dp)
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(IconBoxBg),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = value,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = valueColor
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = PrimaryPurple,
+                modifier = Modifier.size(18.dp)
             )
-            extraBadge?.let { badge ->
-                Surface(
-                    color = Color(0xFFF0EFFF),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            contentDescription = null,
-                            tint = PrimaryPurple,
-                            modifier = Modifier.size(12.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = badge,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = PrimaryPurple
-                        )
-                    }
-                }
-            }
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(text = label, fontSize = 11.sp, color = TextGray)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(text = value, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextDark)
         }
     }
 }

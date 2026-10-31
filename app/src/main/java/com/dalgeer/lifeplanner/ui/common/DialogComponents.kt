@@ -2,38 +2,22 @@ package com.dalgeer.lifeplanner.ui.common
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.Assignment
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dalgeer.lifeplanner.data.model.*
 import com.dalgeer.lifeplanner.ui.theme.*
 
-
-import com.dalgeer.lifeplanner.ui.common.*
-import com.dalgeer.lifeplanner.ui.screens.*
-
-// --- Official Material 3 Date Picker Dialog ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDatePickerDialog(
@@ -63,7 +47,7 @@ fun CustomDatePickerDialog(
             }
         },
         shape = RoundedCornerShape(20.dp),
-        colors = DatePickerDefaults.colors(containerColor = White)
+        colors = DatePickerDefaults.colors(containerColor = CardSurface)
     ) {
         DatePicker(state = datePickerState)
     }
@@ -157,19 +141,19 @@ fun CustomTimePickerDialog(
                     TimePicker(
                         state = timePickerState,
                         colors = TimePickerDefaults.colors(
-                            clockDialColor = Color(0xFFF3F4F6),
-                            clockDialSelectedContentColor = White,
+                            clockDialColor = SurfaceVariantColor,
+                            clockDialSelectedContentColor = Color.White,
                             clockDialUnselectedContentColor = TextDark,
                             selectorColor = PrimaryPurple,
-                            containerColor = White,
+                            containerColor = CardSurface,
                             periodSelectorBorderColor = PrimaryPurple,
                             periodSelectorSelectedContainerColor = PrimaryPurple,
-                            periodSelectorSelectedContentColor = White,
-                            periodSelectorUnselectedContainerColor = Color(0xFFF3F4F6),
+                            periodSelectorSelectedContentColor = Color.White,
+                            periodSelectorUnselectedContainerColor = SurfaceVariantColor,
                             periodSelectorUnselectedContentColor = TextDark,
-                            timeSelectorSelectedContainerColor = Color(0xFFF0EFFF),
+                            timeSelectorSelectedContainerColor = IconBoxBg,
                             timeSelectorSelectedContentColor = PrimaryPurple,
-                            timeSelectorUnselectedContainerColor = Color(0xFFF3F4F6),
+                            timeSelectorUnselectedContainerColor = SurfaceVariantColor,
                             timeSelectorUnselectedContentColor = TextDark
                         )
                     )
@@ -194,7 +178,7 @@ fun CustomTimePickerDialog(
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Confirm Time", fontWeight = FontWeight.Bold, color = White)
+                Text("Confirm Time", fontWeight = FontWeight.Bold, color = Color.White)
             }
         },
         dismissButton = {
@@ -203,6 +187,91 @@ fun CustomTimePickerDialog(
             }
         },
         shape = RoundedCornerShape(24.dp),
-        containerColor = White
+        containerColor = CardSurface
+    )
+}
+
+@Composable
+fun ExitConfirmationDialog(
+    onConfirmExit: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = CardSurface,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(IconBoxBg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
+                        contentDescription = "Exit App",
+                        tint = PrimaryPurple,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(14.dp))
+                Column {
+                    Text(
+                        text = "Exit LifeSync?",
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextDark
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "Close Application",
+                        fontSize = 12.sp,
+                        color = TextGray
+                    )
+                }
+            }
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to close the app? All your tasks, routines, and goals are saved and up to date.",
+                fontSize = 13.sp,
+                color = TextGray,
+                lineHeight = 18.sp
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirmExit,
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
+                shape = RoundedCornerShape(14.dp),
+                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp)
+            ) {
+                Text(
+                    text = "Exit App",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(14.dp),
+                border = BorderStroke(1.dp, DividerColor),
+                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp)
+            ) {
+                Text(
+                    text = "Stay in App",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextDark
+                )
+            }
+        }
     )
 }

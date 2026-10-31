@@ -1,0 +1,13 @@
+{
+    "data_safety_mismatches": [],
+    "findings": [],
+    "manual_review": [],
+    "metadata": {
+        "app_id": "com.lifesync.task.routine.planner",
+        "overall_compliance": "Compliant",
+        "scan_date": "2026-10-31T19:41:57.902270"
+    },
+    "suggested_declaration": {
+        "collected_data": []
+    }
+}

@@ -1,0 +1,90 @@
+{
+  "domain": "Data Safety and Privacy",
+  "findings": [
+    {
+      "psl_constant": "MUSIC",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/home/AddNewBottomSheet.kt"
+      ],
+      "evidence": "The pattern 'track' in AddNewBottomSheet.kt refers to habit tracking ('track your streak') and the TrackChanges icon. No music files are accessed, collected, or transferred off-device.",
+      "recommendation": "No action required. Music files are neither accessed nor transmitted off-device.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "AUDIO",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/settings/SettingsScreen.kt"
+      ],
+      "evidence": "The pattern 'record' in SettingsScreen.kt refers to a string message ('No boot event recorded yet'). No voice or sound recordings are collected or transferred off-device.",
+      "recommendation": "No action required. Audio recordings are neither collected nor transmitted off-device.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "FILES_AND_DOCS",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/settings/SettingsScreen.kt"
+      ],
+      "evidence": "The pattern 'Realm' in SettingsScreen.kt matches the string 'Realme' (a smartphone manufacturer in OEM settings). No user files or documents are collected or transferred off-device.",
+      "recommendation": "No action required. User files and documents remain strictly local.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "PERFORMANCE_DIAGNOSTICS",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/util/PermissionUtils.kt"
+      ],
+      "evidence": "PowerManager in PermissionUtils.kt is used locally to query isIgnoringBatteryOptimizations for alarm scheduling permissions. No performance or diagnostic data is transmitted off-device from this component.",
+      "recommendation": "No action required. Battery optimization checks are local and exempt from Data Safety declaration.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "OTHER_AUDIO",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/util/NotificationHelper.kt"
+      ],
+      "evidence": "RingtoneManager in NotificationHelper.kt retrieves local system ringtone URIs for notification/alarm playback on device. No audio content is collected or transmitted off-device.",
+      "recommendation": "No action required. Ringtone sound usage is entirely local to notification alerts.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    }
+  ]
+}

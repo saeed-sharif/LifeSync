@@ -61,7 +61,7 @@ class TaskViewModel(
                         AlarmScheduler.cancelTaskReminder(getApplication(), taskId)
 
                         // Auto-Repeat Recurring Task Logic
-                        if (task.repeatOption != "Does not repeat") {
+                        if (AlarmScheduler.isRepeatingTask(task)) {
                             val nextDateStr = when (task.repeatOption) {
                                 "Every Day" -> "Tomorrow"
                                 "Every Week" -> "Next Week"

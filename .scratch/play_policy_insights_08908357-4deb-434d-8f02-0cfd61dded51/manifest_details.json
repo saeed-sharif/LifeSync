@@ -1,0 +1,14 @@
+{
+    "app_dir": "/Users/blackcoder/AndroidStudioProjects/LifePlanner",
+    "app_label": "app_name",
+    "foreground_services": [],
+    "package_name": "com.lifesync.task.routine.planner",
+    "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.VIBRATE"
+    ],
+    "target_sdk": 37
+}

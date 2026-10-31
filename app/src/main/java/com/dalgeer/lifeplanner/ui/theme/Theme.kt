@@ -16,32 +16,34 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryPurpleDark,
-    secondary = AccentBlueDark,
-    tertiary = SuccessGreenDark,
-    background = ScreenBackgroundDark,    // 0xFF0D0F18
-    surface = SurfaceDark,                // 0xFF141722
-    surfaceVariant = Color(0xFF1A1F2E),   // 0xFF1A1F2E
-    onBackground = TextDarkTheme,         // 0xFFFFFFFF
-    onSurface = TextDarkTheme,            // 0xFFFFFFFF
-    onSurfaceVariant = TextGrayDarkTheme, // 0xFF8E95A5
-    outlineVariant = DividerColorDark,    // 0xFF222738
+    primary = PrimaryPurpleDark,             // 0xFF8B7CFF
+    primaryContainer = PrimaryContainerDark,  // 0xFF292344
+    secondary = AccentBlueDark,              // 0xFF42A5F5
+    tertiary = SuccessGreenDark,             // 0xFF00E676
+    background = ScreenBackgroundDark,       // 0xFF0D0F18
+    surface = SurfaceDark,                   // 0xFF191C29
+    surfaceVariant = SurfaceVariantDark,     // 0xFF222638
+    onBackground = TextDarkTheme,            // 0xFFF5F5FA
+    onSurface = TextDarkTheme,               // 0xFFF5F5FA
+    onSurfaceVariant = TextGrayDarkTheme,    // 0xFFA6ADBD
+    outlineVariant = DividerColorDark,       // 0xFF2A3040
     error = ErrorRedDark,
     onPrimary = Color.White,
     onSecondary = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryPurpleLight,
-    secondary = AccentBlueLight,
-    tertiary = SuccessGreenLight,
-    background = ScreenBackgroundLight,
-    surface = WhiteLight,
+    primary = PrimaryPurpleLight,            // 0xFF6C63FF
+    primaryContainer = LightPurpleLight,     // 0xFFF0EFFF
+    secondary = AccentBlueLight,             // 0xFF3F51B5
+    tertiary = SuccessGreenLight,            // 0xFF00B894)
+    background = ScreenBackgroundLight,      // 0xFFF8F9FF
+    surface = WhiteLight,                    // 0xFFFFFFFF
     surfaceVariant = Color(0xFFF1F5F9),
-    onBackground = TextDarkLight,
-    onSurface = TextDarkLight,
-    onSurfaceVariant = TextGrayLight,
-    outlineVariant = DividerColorLight,
+    onBackground = TextDarkLight,            // 0xFF1A1C1E
+    onSurface = TextDarkLight,               // 0xFF1A1C1E
+    onSurfaceVariant = TextGrayLight,        // 0xFF74777F
+    outlineVariant = DividerColorLight,      // 0xFFE1E2EC
     error = ErrorRedLight,
     onPrimary = Color.White,
     onSecondary = Color.White

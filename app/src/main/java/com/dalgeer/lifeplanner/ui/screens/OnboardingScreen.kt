@@ -65,7 +65,7 @@ fun OnboardingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(ScreenBackground)
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
@@ -165,7 +165,7 @@ fun OnboardingScreen(
                             .size(width)
                             .clip(CircleShape)
                             .background(
-                                color = if (isSelected) PrimaryPurple else Color(0xFFE2E8F0)
+                                color = if (isSelected) PrimaryPurple else DividerColor
                             )
                     )
                 }

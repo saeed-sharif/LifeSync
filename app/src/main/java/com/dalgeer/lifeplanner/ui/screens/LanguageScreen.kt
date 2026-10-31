@@ -93,8 +93,7 @@ fun LanguageScreen(onNext: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Surface(
-
-                    color = LightPurple,
+                    color = IconBoxBg,
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Text(
@@ -145,9 +144,9 @@ fun LanguageScreen(onNext: () -> Unit) {
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple)
             ) {
-                Text("Continue", style = Typography.titleMedium, color = White, fontWeight = FontWeight.Bold)
+                Text("Continue", style = Typography.titleMedium, color = Color.White, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.width(12.dp))
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, null, modifier = Modifier.size(20.dp), tint = White)
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, null, modifier = Modifier.size(20.dp), tint = Color.White)
             }
         }
     }
@@ -162,7 +161,7 @@ fun LanguageCardItem(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
-        color = White,
+        color = CardSurface,
         border = BorderStroke(
             width = if (isSelected) 2.dp else 1.dp,
             color = if (isSelected) PrimaryPurple else DividerColor

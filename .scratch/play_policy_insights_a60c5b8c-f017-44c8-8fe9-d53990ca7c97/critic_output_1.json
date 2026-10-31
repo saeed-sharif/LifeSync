@@ -1,0 +1,7 @@
+{
+  "9": {
+    "action": "VERIFIED",
+    "confidence": "High",
+    "critic_justification": "AndroidManifest.xml line 6 declares android.permission.USE_EXACT_ALARM. Under Google Play Policy, USE_EXACT_ALARM is restricted to apps whose primary core function is an alarm clock, timer, or calendar app with event reminders. As a task and routine planner, LifePlanner does not qualify for USE_EXACT_ALARM and must rely exclusively on SCHEDULE_EXACT_ALARM."
+  }
+}

@@ -6,13 +6,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Alarm
-import androidx.compose.material.icons.outlined.BatterySaver
 import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,50 +21,75 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dalgeer.lifeplanner.ui.theme.CardSurface
 import com.dalgeer.lifeplanner.ui.theme.PrimaryPurple
 import com.dalgeer.lifeplanner.ui.theme.TextDark
 import com.dalgeer.lifeplanner.ui.theme.TextGray
-import com.dalgeer.lifeplanner.ui.theme.White
+import com.dalgeer.lifeplanner.util.AlarmScheduler
 import com.dalgeer.lifeplanner.util.PermissionUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun NotificationAndAlarmPermissionHandler(
+    resumeTick: Int = 0,
     showDialogIfMissing: Boolean = true,
     onPermissionResult: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
-    var hasNotifPermission by remember { mutableStateOf(PermissionUtils.hasNotificationPermission(context)) }
-    var hasExactAlarmPermission by remember { mutableStateOf(PermissionUtils.canScheduleExactAlarms(context)) }
-    var isBatteryOptimized by remember { mutableStateOf(!PermissionUtils.isIgnoringBatteryOptimizations(context)) }
+    var refreshKey by remember { mutableIntStateOf(0) }
+
+    var hasNotifPermission by remember(resumeTick, refreshKey) {
+        mutableStateOf(PermissionUtils.hasNotificationPermission(context))
+    }
+    var hasExactAlarmPermission by remember(resumeTick, refreshKey) {
+        mutableStateOf(PermissionUtils.canScheduleExactAlarms(context))
+    }
 
     var showNotifDisclosureDialog by remember { mutableStateOf(false) }
     var showAlarmDisclosureDialog by remember { mutableStateOf(false) }
-    var showBatteryDisclosureDialog by remember { mutableStateOf(false) }
 
-    // Launcher for POST_NOTIFICATIONS permission (Android 13+)
     val notifPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasNotifPermission = isGranted
         onPermissionResult(isGranted)
+        refreshKey++
         if (!hasExactAlarmPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             showAlarmDisclosureDialog = true
-        } else if (isBatteryOptimized) {
-            showBatteryDisclosureDialog = true
         }
     }
 
-    LaunchedEffect(Unit) {
+    // Re-schedule pending alarms whenever permissions are valid or granted
+    LaunchedEffect(hasNotifPermission, hasExactAlarmPermission) {
+        if (hasNotifPermission || hasExactAlarmPermission) {
+            try {
+                withContext(Dispatchers.IO) {
+                    AlarmScheduler.rescheduleAll(context)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    LaunchedEffect(resumeTick, showDialogIfMissing) {
+        hasNotifPermission = PermissionUtils.hasNotificationPermission(context)
+        hasExactAlarmPermission = PermissionUtils.canScheduleExactAlarms(context)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotifPermission && showDialogIfMissing) {
             showNotifDisclosureDialog = true
+            showAlarmDisclosureDialog = false
         } else if (!hasExactAlarmPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && showDialogIfMissing) {
             showAlarmDisclosureDialog = true
-        } else if (isBatteryOptimized && showDialogIfMissing) {
-            showBatteryDisclosureDialog = true
+            showNotifDisclosureDialog = false
+        } else {
+            showNotifDisclosureDialog = false
+            showAlarmDisclosureDialog = false
         }
     }
 
-    // 1. Prominent Disclosure: Notification Permission (Google Play Compliant)
+    // 1. Prominent Disclosure: Notification Permission
     if (showNotifDisclosureDialog) {
         ProminentDisclosureDialog(
             icon = Icons.Outlined.NotificationsActive,
@@ -87,14 +109,12 @@ fun NotificationAndAlarmPermissionHandler(
                 showNotifDisclosureDialog = false
                 if (!hasExactAlarmPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     showAlarmDisclosureDialog = true
-                } else if (isBatteryOptimized) {
-                    showBatteryDisclosureDialog = true
                 }
             }
         )
     }
 
-    // 2. Prominent Disclosure: Exact Alarm Permission (Google Play Compliant)
+    // 2. Prominent Disclosure: Exact Alarm Permission
     if (showAlarmDisclosureDialog) {
         ProminentDisclosureDialog(
             icon = Icons.Outlined.Alarm,
@@ -110,27 +130,6 @@ fun NotificationAndAlarmPermissionHandler(
             },
             onDismiss = {
                 showAlarmDisclosureDialog = false
-                if (isBatteryOptimized) showBatteryDisclosureDialog = true
-            }
-        )
-    }
-
-    // 3. Prominent Disclosure: Battery Unrestricted Access (Google Play Compliant)
-    if (showBatteryDisclosureDialog) {
-        ProminentDisclosureDialog(
-            icon = Icons.Outlined.BatterySaver,
-            iconTint = Color(0xFF00A878),
-            title = "Permission Notice: Battery Saver",
-            subtitle = "Prevent Missed Routine Reminders",
-            description = "To prevent your phone's battery saver from stopping habit alarms when LifeSync is closed or swiped away, please allow unrestricted battery usage.\n\n• Guarantees 100% reliable alarms.\n• Ultra-lightweight and battery-friendly.",
-            confirmText = "Allow Unrestricted",
-            dismissText = "Later",
-            onConfirm = {
-                showBatteryDisclosureDialog = false
-                PermissionUtils.requestIgnoreBatteryOptimizations(context)
-            },
-            onDismiss = {
-                showBatteryDisclosureDialog = false
             }
         )
     }
@@ -151,7 +150,7 @@ private fun ProminentDisclosureDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(24.dp),
-        containerColor = White,
+        containerColor = CardSurface,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -202,7 +201,7 @@ private fun ProminentDisclosureDialog(
             ) {
                 Text(
                     text = confirmText,
-                    color = White,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp
                 )

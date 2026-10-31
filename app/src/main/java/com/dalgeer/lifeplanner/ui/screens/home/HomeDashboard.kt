@@ -6,22 +6,18 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.dalgeer.lifeplanner.data.model.*
+import com.dalgeer.lifeplanner.data.model.isOverdue
 import com.dalgeer.lifeplanner.data.preferences.AppPreferences
 import com.dalgeer.lifeplanner.presentation.uiState.UiState
 import com.dalgeer.lifeplanner.presentation.viewmodel.*
@@ -56,14 +52,13 @@ fun HomeDashboard(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .padding(horizontal = PaddingLarge)
     ) {
-        // FIXED Top Header (Does NOT scroll)
+        // FIXED Top Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 12.dp),
+                .padding(top = 8.dp, bottom = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -115,9 +110,9 @@ fun HomeDashboard(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // Top Progress Banner Card (Dynamic progress based on tasks)
+            // Top Progress Banner Card
             TopProgressCard(
                 tasks = tasks,
                 onCardClick = {
@@ -129,17 +124,17 @@ fun HomeDashboard(
                 }
             )
 
-            // Overdue Tasks Alert Card (if any overdue tasks exist)
+            // Overdue Tasks Alert Card
             val overdueTasks = tasks.filter { it.isOverdue() }
             if (overdueTasks.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 OverdueTaskAlertCard(
                     overdueTasks = overdueTasks,
                     onViewClick = { onNavigateToTask(overdueTasks.first().id) }
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Up Next Section Header
             Row(
@@ -155,7 +150,7 @@ fun HomeDashboard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Up Next Tasks List
             UpNextTaskCardList(
@@ -164,7 +159,7 @@ fun HomeDashboard(
                 onTaskClick = { taskId -> onNavigateToTask(taskId) }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Today's Routines Section Header
             Row(
@@ -172,39 +167,39 @@ fun HomeDashboard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-            Text(
-                text = "Today's Routines",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextDark
-            )
-        }
+                Text(
+                    text = "Today's Routines",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark
+                )
+            }
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-        // Today's Routines Horizontal Cards
-        if (routines.isEmpty()) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = White
-            ) {
-                Box(modifier = Modifier.padding(20.dp), contentAlignment = Alignment.Center) {
-                    Text("No routines added yet.", fontSize = 13.sp, color = TextGray)
+            // Today's Routines Horizontal Cards
+            if (routines.isEmpty()) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    color = CardSurface
+                ) {
+                    Box(modifier = Modifier.padding(20.dp), contentAlignment = Alignment.Center) {
+                        Text("No routines added yet.", fontSize = 13.sp, color = TextGray)
+                    }
+                }
+            } else {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(routines) { routine ->
+                        HomeRoutineCard(routine)
+                    }
                 }
             }
-        } else {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(routines) { routine ->
-                    HomeRoutineCard(routine)
-                }
-            }
-        }
 
-        Spacer(modifier = Modifier.height(110.dp))
+            Spacer(modifier = Modifier.height(110.dp))
         }
     }
 }

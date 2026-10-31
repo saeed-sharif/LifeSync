@@ -1,0 +1,59 @@
+{
+  "domain": "Data Safety and Privacy",
+  "findings": [
+    {
+      "psl_constant": "NAME",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/data/preferences/AppPreferences.kt"
+      ],
+      "evidence": "The user's name is saved locally in SharedPreferences (AppPreferences.kt) and is used strictly on-device to personalize UI greetings. It is not transmitted off-device or shared with third parties.",
+      "recommendation": "Ensure user name continues to remain local-only unless explicitly declared in the Play Console Data Safety section.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "RACE_ETHNICITY",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/receiver/BootReceiver.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/receiver/NotificationActionReceiver.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/receiver/NotificationReceiver.kt"
+      ],
+      "evidence": "The code pattern 'race' matched 'printStackTrace()' in exception handling statements. No race or ethnicity data is collected, stored, or transmitted by the application.",
+      "recommendation": "No action required; race and ethnicity data is neither collected nor processed.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "MUSIC",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/common/PermissionHandler.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/OnboardingScreen.kt"
+      ],
+      "evidence": "The code pattern 'track' matched user interface strings referring to tracking habit progress or battery tracking disclaimers. No music files or audio data are accessed or transmitted by the app.",
+      "recommendation": "No action required; music audio files are neither accessed nor collected.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    }
+  ]
+}

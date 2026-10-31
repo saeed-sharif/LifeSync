@@ -2,7 +2,6 @@ package com.dalgeer.lifeplanner.ui.screens.tasks
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -90,7 +89,7 @@ fun NewTaskBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = White,
+        containerColor = CardSurface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         dragHandle = {
             Box(
@@ -98,7 +97,7 @@ fun NewTaskBottomSheet(
                     .padding(top = 12.dp, bottom = 8.dp)
                     .size(width = 38.dp, height = 4.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE2E8F0))
+                    .background(DividerColor)
             )
         }
     ) {
@@ -166,7 +165,7 @@ fun NewTaskBottomSheet(
                                     text = "Task title...",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Normal,
-                                    color = Color.LightGray
+                                    color = TextGray
                                 )
                             }
                             innerTextField()
@@ -189,17 +188,18 @@ fun NewTaskBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 categoryList.take(3).forEach { (catEnum, catLabel) ->
                     val isSelected = selectedCategory == catEnum
                     Surface(
                         modifier = Modifier
                             .weight(1f)
+                            .padding(end = 4.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { selectedCategory = catEnum },
                         shape = RoundedCornerShape(12.dp),
-                        color = if (isSelected) Color(0xFFF0EFFF) else White,
+                        color = if (isSelected) IconBoxBg else CardSurface,
                         border = BorderStroke(1.dp, if (isSelected) PrimaryPurple else InputFieldBorder)
                     ) {
                         Box(
@@ -219,17 +219,18 @@ fun NewTaskBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 categoryList.drop(3).forEach { (catEnum, catLabel) ->
                     val isSelected = selectedCategory == catEnum
                     Surface(
                         modifier = Modifier
                             .weight(1f)
+                            .padding(end = 4.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { selectedCategory = catEnum },
                         shape = RoundedCornerShape(12.dp),
-                        color = if (isSelected) Color(0xFFF0EFFF) else White,
+                        color = if (isSelected) IconBoxBg else CardSurface,
                         border = BorderStroke(1.dp, if (isSelected) PrimaryPurple else InputFieldBorder)
                     ) {
                         Box(
@@ -259,26 +260,27 @@ fun NewTaskBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                priorityList.forEach { (pEnum, pLabel) ->
-                    val isSelected = selectedPriority == pEnum
+                priorityList.forEach { (prioEnum, prioLabel) ->
+                    val isSelected = selectedPriority == prioEnum
                     Surface(
                         modifier = Modifier
                             .weight(1f)
+                            .padding(end = 4.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable { selectedPriority = pEnum },
+                            .clickable { selectedPriority = prioEnum },
                         shape = RoundedCornerShape(12.dp),
-                        color = if (isSelected) Color(0xFFF0EFFF) else White,
+                        color = if (isSelected) IconBoxBg else CardSurface,
                         border = BorderStroke(1.dp, if (isSelected) PrimaryPurple else InputFieldBorder)
                     ) {
                         Box(
-                            modifier = Modifier.padding(vertical = 10.dp),
+                            modifier = Modifier.padding(vertical = 10.dp, horizontal = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = pLabel,
-                                fontSize = 13.sp,
+                                text = prioLabel,
+                                fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 color = if (isSelected) PrimaryPurple else TextDark
                             )
@@ -289,123 +291,60 @@ fun NewTaskBottomSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Field 4: Date
-            Text(
-                text = "Date",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextDark
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showCustomDatePicker = true },
-                shape = RoundedCornerShape(14.dp),
-                color = InputFieldBg,
-                border = BorderStroke(1.dp, InputFieldBorder)
-            ) {
-                Row(
-                    modifier = Modifier.padding(14.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.CalendarToday,
-                        contentDescription = null,
-                        tint = PrimaryPurple,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = date,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = TextDark
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Field 5: Time & Reminder
-            Text(
-                text = "Time",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextDark
-            )
-            Spacer(modifier = Modifier.height(6.dp))
+            // Field 4 & 5: Date & Time Pickers
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Time Card
-                Surface(
-                    modifier = Modifier
-                        .weight(1.3f)
-                        .clickable { showCustomTimePicker = true },
-                    shape = RoundedCornerShape(14.dp),
-                    color = InputFieldBg,
-                    border = BorderStroke(1.dp, InputFieldBorder)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Date", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextDark)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showCustomDatePicker = true },
+                        shape = RoundedCornerShape(14.dp),
+                        color = InputFieldBg,
+                        border = BorderStroke(1.dp, InputFieldBorder)
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.AccessTime,
-                            contentDescription = null,
-                            tint = PrimaryPurple,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = time,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextDark
-                        )
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Outlined.CalendarToday, contentDescription = null, tint = PrimaryPurple, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = date, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = TextDark, maxLines = 1)
+                        }
                     }
                 }
 
-                // Reminder Pill
-                Surface(
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(14.dp),
-                    color = Color(0xFFF0EFFF),
-                    border = BorderStroke(1.dp, PrimaryPurple.copy(alpha = 0.3f))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Time", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextDark)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showCustomTimePicker = true },
+                        shape = RoundedCornerShape(14.dp),
+                        color = InputFieldBg,
+                        border = BorderStroke(1.dp, InputFieldBorder)
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            contentDescription = null,
-                            tint = PrimaryPurple,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Reminder",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = PrimaryPurple
-                        )
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Outlined.Schedule, contentDescription = null, tint = PrimaryPurple, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = time, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = TextDark, maxLines = 1)
+                        }
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Field 6: Repeat
-            Text(
-                text = "Repeat",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextDark
-            )
+            // Field 6: Repeat Selector Dropdown
+            Text("Repeat", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextDark)
             Spacer(modifier = Modifier.height(6.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 Surface(
@@ -417,44 +356,29 @@ fun NewTaskBottomSheet(
                     border = BorderStroke(1.dp, InputFieldBorder)
                 ) {
                     Row(
-                        modifier = Modifier.padding(14.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.Sync,
-                                contentDescription = null,
-                                tint = PrimaryPurple,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                text = repeatOption,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = TextDark
-                            )
+                            Icon(Icons.Outlined.Autorenew, contentDescription = null, tint = PrimaryPurple, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = repeatOption, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextDark)
                         }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = TextGray,
-                            modifier = Modifier.size(18.dp)
-                        )
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = TextGray, modifier = Modifier.size(18.dp))
                     }
                 }
 
                 DropdownMenu(
                     expanded = showRepeatDropdown,
                     onDismissRequest = { showRepeatDropdown = false },
-                    modifier = Modifier.background(White)
+                    modifier = Modifier.background(CardSurface)
                 ) {
-                    repeatOptions.forEach { item ->
+                    repeatOptions.forEach { opt ->
                         DropdownMenuItem(
-                            text = { Text(item, color = TextDark) },
+                            text = { Text(opt, color = TextDark) },
                             onClick = {
-                                repeatOption = item
+                                repeatOption = opt
                                 showRepeatDropdown = false
                             }
                         )
@@ -462,47 +386,74 @@ fun NewTaskBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            errorMessage?.let { msg ->
-                Text(
-                    text = msg,
-                    color = ErrorRed,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
+            // Field 7: Notes / Description
+            Text("Notes (Optional)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextDark)
+            Spacer(modifier = Modifier.height(6.dp))
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                color = InputFieldBg,
+                border = BorderStroke(1.dp, InputFieldBorder)
+            ) {
+                BasicTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    cursorBrush = SolidColor(TextDark),
+                    textStyle = TextStyle(fontSize = 14.sp, color = TextDark),
+                    decorationBox = { innerTextField ->
+                        Box(modifier = Modifier.padding(14.dp)) {
+                            if (notes.isEmpty()) {
+                                Text("Add extra details...", fontSize = 14.sp, color = TextGray)
+                            }
+                            innerTextField()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 60.dp, max = 100.dp)
                 )
             }
 
-            // Bottom Button: Save Task
+            errorMessage?.let { msg ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = msg, color = ErrorRed, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Save Task Button
             Button(
                 onClick = {
                     if (taskTitle.isBlank()) {
-                        errorMessage = "Task title is compulsory!"
-                        return@Button
+                        errorMessage = "Please enter a task title"
+                    } else {
+                        val task = TaskModel(
+                            id = existingTask?.id ?: java.util.UUID.randomUUID().toString(),
+                            title = taskTitle.trim(),
+                            category = selectedCategory,
+                            priority = selectedPriority,
+                            date = date,
+                            time = time,
+                            notes = notes.trim(),
+                            repeatOption = repeatOption,
+                            status = existingTask?.status ?: TaskStatus.Pending
+                        )
+                        onSave(task)
                     }
-                    errorMessage = null
-                    val taskToSave = (existingTask ?: TaskModel(title = taskTitle.trim())).copy(
-                        title = taskTitle.trim(),
-                        category = selectedCategory,
-                        priority = selectedPriority,
-                        date = date,
-                        time = time,
-                        notes = notes,
-                        repeatOption = repeatOption
-                    )
-                    onSave(taskToSave)
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
                 shape = RoundedCornerShape(16.dp),
-                contentPadding = PaddingValues(vertical = 14.dp)
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple)
             ) {
                 Text(
-                    text = if (existingTask != null) "Save Changes" else "Save Task",
-                    fontSize = 16.sp,
+                    text = if (existingTask != null) "Update Task" else "Save Task",
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = White
+                    color = Color.White
                 )
             }
 

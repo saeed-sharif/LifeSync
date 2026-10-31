@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -29,11 +28,6 @@ import androidx.compose.ui.unit.sp
 import com.dalgeer.lifeplanner.data.model.*
 import com.dalgeer.lifeplanner.ui.theme.*
 
-
-import com.dalgeer.lifeplanner.ui.common.*
-import com.dalgeer.lifeplanner.ui.screens.*
-
-// 7. Add New Goal Sheet
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewGoalBottomSheet(
@@ -49,7 +43,6 @@ fun NewGoalBottomSheet(
 
     var showCustomDatePicker by remember { mutableStateOf(false) }
 
-
     if (showCustomDatePicker) {
         val datePickerState = rememberDatePickerState()
         DatePickerDialog(
@@ -62,14 +55,15 @@ fun NewGoalBottomSheet(
                     }
                     showCustomDatePicker = false
                 }) {
-                    Text("OK")
+                    Text("OK", color = PrimaryPurple)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCustomDatePicker = false }) {
-                    Text("Cancel")
+                    Text("Cancel", color = TextGray)
                 }
-            }
+            },
+            colors = DatePickerDefaults.colors(containerColor = CardSurface)
         ) {
             DatePicker(state = datePickerState)
         }
@@ -86,7 +80,7 @@ fun NewGoalBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = White,
+        containerColor = CardSurface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         dragHandle = {
             Box(
@@ -94,7 +88,7 @@ fun NewGoalBottomSheet(
                     .padding(top = 12.dp, bottom = 8.dp)
                     .size(width = 38.dp, height = 4.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE2E8F0))
+                    .background(DividerColor)
             )
         }
     ) {
@@ -117,7 +111,7 @@ fun NewGoalBottomSheet(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(14.dp))
-                            .background(Color(0xFFF0EFFF)),
+                            .background(IconBoxBg),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -151,7 +145,7 @@ fun NewGoalBottomSheet(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close",
-                        tint = Color(0xFF6B7280),
+                        tint = TextDark,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -168,7 +162,7 @@ fun NewGoalBottomSheet(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Goal Type Cards (Personal Goal, Save Money, Learn Something, Health & Fitness)
+            // Goal Type Cards
             data class GoalTypeCard(
                 val type: GoalType,
                 val title: String,
@@ -180,47 +174,46 @@ fun NewGoalBottomSheet(
                 val selectedBorderColor: Color
             )
 
-            val isDark = MaterialTheme.colorScheme.background == ScreenBackgroundDark
             val goalTypes = listOf(
                 GoalTypeCard(
                     GoalType.Personal,
                     "Personal",
                     "Achieve your dreams",
                     Icons.Outlined.TrackChanges,
-                    if (isDark) Color(0xFF241B3B) else Color(0xFFF3F0FF),
-                    if (isDark) Color(0xFF332A52) else Color(0xFFE2DDFF),
-                    if (isDark) Color(0xFF8B84FF) else Color(0xFF6C63FF),
-                    if (isDark) Color(0xFF8B84FF) else Color(0xFF6C63FF)
+                    if (isDarkTheme) SurfaceVariantDark else Color(0xFFF3F0FF),
+                    if (isDarkTheme) PrimaryContainerDark else Color(0xFFE2DDFF),
+                    if (isDarkTheme) PrimaryPurpleDark else Color(0xFF6C63FF),
+                    if (isDarkTheme) PrimaryPurpleDark else Color(0xFF6C63FF)
                 ),
                 GoalTypeCard(
                     GoalType.Career,
                     "Career",
                     "Grow professionally",
                     Icons.AutoMirrored.Outlined.MenuBook,
-                    if (isDark) Color(0xFF1A263B) else Color(0xFFEFF6FF),
-                    if (isDark) Color(0xFF233554) else Color(0xFFDBEAFE),
-                    if (isDark) Color(0xFF60A5FA) else Color(0xFF2563EB),
-                    if (isDark) Color(0xFF60A5FA) else Color(0xFF2563EB)
+                    if (isDarkTheme) SurfaceVariantDark else Color(0xFFEFF6FF),
+                    if (isDarkTheme) Color(0xFF1E2B3E) else Color(0xFFDBEAFE),
+                    if (isDarkTheme) AccentBlueDark else Color(0xFF2563EB),
+                    if (isDarkTheme) AccentBlueDark else Color(0xFF2563EB)
                 ),
                 GoalTypeCard(
                     GoalType.Fitness,
                     "Fitness",
                     "Be a healthier you",
                     Icons.Outlined.FavoriteBorder,
-                    if (isDark) Color(0xFF2E1F1A) else Color(0xFFFFF3EA),
-                    if (isDark) Color(0xFF422C23) else Color(0xFFFFE2CE),
-                    if (isDark) Color(0xFFFFB300) else Color(0xFFFF6B00),
-                    if (isDark) Color(0xFFFFB300) else Color(0xFFFF6B00)
+                    if (isDarkTheme) SurfaceVariantDark else Color(0xFFFFF3EA),
+                    if (isDarkTheme) Color(0xFF3D2A12) else Color(0xFFFFE2CE),
+                    if (isDarkTheme) Color(0xFFFFB74D) else Color(0xFFFF6B00),
+                    if (isDarkTheme) Color(0xFFFFB74D) else Color(0xFFFF6B00)
                 ),
                 GoalTypeCard(
                     GoalType.Financial,
                     "Financial",
                     "Build your savings",
                     Icons.Outlined.AccountBalanceWallet,
-                    if (isDark) Color(0xFF162B28) else Color(0xFFEAF7F1),
-                    if (isDark) Color(0xFF1F3D37) else Color(0xFFCBECE0),
-                    if (isDark) Color(0xFF00E676) else Color(0xFF00A878),
-                    if (isDark) Color(0xFF00E676) else Color(0xFF00A878)
+                    if (isDarkTheme) SurfaceVariantDark else Color(0xFFEAF7F1),
+                    if (isDarkTheme) LightGreenDark else Color(0xFFCBECE0),
+                    if (isDarkTheme) SuccessGreenDark else Color(0xFF00A878),
+                    if (isDarkTheme) SuccessGreenDark else Color(0xFF00A878)
                 )
             )
 
@@ -240,7 +233,7 @@ fun NewGoalBottomSheet(
                             },
                         shape = RoundedCornerShape(16.dp),
                         color = type.bgColor,
-                        border = if (isSelected) BorderStroke(1.5.dp, type.selectedBorderColor) else null
+                        border = if (isSelected) BorderStroke(1.5.dp, type.selectedBorderColor) else BorderStroke(1.dp, DividerColor)
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (isSelected) {
@@ -610,7 +603,7 @@ fun NewGoalBottomSheet(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
-                        tint = White,
+                        tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -618,7 +611,7 @@ fun NewGoalBottomSheet(
                         text = "Create Goal",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = White
+                        color = Color.White
                     )
                 }
             }

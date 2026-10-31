@@ -1,0 +1,75 @@
+{
+  "domain": "Data Safety and Privacy",
+  "findings": [
+    {
+      "psl_constant": "MUSIC",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/common/PermissionHandler.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/OnboardingScreen.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/goals/GoalsScreen.kt"
+      ],
+      "evidence": "Pattern 'track' matched user interface strings referring to habit/task tracking and icons. No music files accessed or transmitted.",
+      "recommendation": "No action required.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "AUDIO",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/settings/SettingsScreen.kt"
+      ],
+      "evidence": "Pattern 'record' in SettingsScreen corresponds to UI text describing boot logs. No audio files recorded or transmitted.",
+      "recommendation": "No action required.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "FILES_AND_DOCS",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/settings/SettingsScreen.kt"
+      ],
+      "evidence": "Pattern 'Realm' in SettingsScreen is a substring match for OEM brand name 'Realme' in autostart settings guidance. No user files accessed or transmitted.",
+      "recommendation": "No action required.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "APPS_ON_DEVICE",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/settings/SettingsScreen.kt"
+      ],
+      "evidence": "getPackageInfo is used solely for querying the app's own package version. No app list data is accessed or transmitted.",
+      "recommendation": "No action required.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    }
+  ]
+}

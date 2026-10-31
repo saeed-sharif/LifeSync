@@ -1,5 +1,6 @@
 package com.dalgeer.lifeplanner.util
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -15,49 +16,65 @@ import com.dalgeer.lifeplanner.receiver.NotificationActionReceiver
 
 object NotificationHelper {
 
-    const val CHANNEL_TASK_REMINDERS = "task_reminders_channel_alarm_v4"
-    const val CHANNEL_ROUTINE_REMINDERS = "routine_reminders_channel_alarm_v4"
+    // Channel settings (sound, importance) can't be changed after creation, so the id is bumped (v5)
+    // and the old v4 channels are deleted.
+    const val CHANNEL_TASK_REMINDERS = "task_reminders_channel_alarm_v5"
+    const val CHANNEL_ROUTINE_REMINDERS = "routine_reminders_channel_alarm_v5"
+
+    private val OLD_CHANNEL_IDS = listOf(
+        "task_reminders_channel_alarm_v4",
+        "routine_reminders_channel_alarm_v4"
+    )
+
+    private val VIBRATION_PATTERN = longArrayOf(0, 800, 400, 800, 400, 800)
+
+    private const val AUTO_DISMISS_MS = 60_000L
 
     fun createNotificationChannels(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
-            val audioAttributes = AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
-                .build()
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            val vibrationPattern = longArrayOf(0, 1000, 500, 1000, 500, 1000, 500, 1000, 500, 1000, 500, 1000)
+        OLD_CHANNEL_IDS.forEach { id ->
+            if (manager.getNotificationChannel(id) != null) manager.deleteNotificationChannel(id)
+        }
 
-            val taskChannel = NotificationChannel(
-                CHANNEL_TASK_REMINDERS,
-                "Task Alarms & Reminders",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Full alarm sound alerts for scheduled tasks"
+        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        val audioAttributes = AudioAttributes.Builder()
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_ALARM)
+            .build()
+
+        fun buildChannel(id: String, name: String, desc: String): NotificationChannel =
+            NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH).apply {
+                description = desc
                 setSound(alarmSound, audioAttributes)
                 enableVibration(true)
-                this.vibrationPattern = vibrationPattern
-                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+                vibrationPattern = VIBRATION_PATTERN
+                enableLights(true)
+                setShowBadge(true)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
 
-            val routineChannel = NotificationChannel(
-                CHANNEL_ROUTINE_REMINDERS,
-                "Routine Alarms & Reminders",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Full alarm sound alerts for daily routine habits"
-                setSound(alarmSound, audioAttributes)
-                enableVibration(true)
-                this.vibrationPattern = vibrationPattern
-                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
-            }
-
-            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.createNotificationChannel(taskChannel)
-            manager.createNotificationChannel(routineChannel)
+        if (manager.getNotificationChannel(CHANNEL_TASK_REMINDERS) == null) {
+            manager.createNotificationChannel(
+                buildChannel(
+                    CHANNEL_TASK_REMINDERS,
+                    "Task Alarms & Reminders",
+                    "Alarm-style alerts for scheduled tasks"
+                )
+            )
+        }
+        if (manager.getNotificationChannel(CHANNEL_ROUTINE_REMINDERS) == null) {
+            manager.createNotificationChannel(
+                buildChannel(
+                    CHANNEL_ROUTINE_REMINDERS,
+                    "Routine Alarms & Reminders",
+                    "Alarm-style alerts for daily routine habits"
+                )
+            )
         }
     }
 
@@ -70,39 +87,42 @@ object NotificationHelper {
         taskId: String? = null,
         routineId: String? = null
     ) {
+        if (!PermissionUtils.hasNotificationPermission(context)) return
+
         createNotificationChannels(context)
 
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val openAppIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
-
-        val pendingIntent = PendingIntent.getActivity(
+        val contentIntent = PendingIntent.getActivity(
             context,
             notificationId,
-            intent,
+            openAppIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
-        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
-        val vibrationPattern = longArrayOf(0, 1000, 500, 1000, 500, 1000, 500, 1000, 500, 1000, 500, 1000)
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setSound(alarmSound)
-            .setVibrate(vibrationPattern)
-            .setContentIntent(pendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setContentIntent(contentIntent)
             .setAutoCancel(true)
+            .setTimeoutAfter(AUTO_DISMISS_MS)
+
+        // On Android 8+ sound/vibration come from the channel. setSound/setDefaults here would
+        // override the alarm sound, so they are only used on older versions.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            builder.setSound(alarmSound)
+            builder.setVibrate(VIBRATION_PATTERN)
+        }
 
         if (taskId != null || routineId != null) {
-            // Action 1: Mark Done
             val markDoneIntent = Intent(context, NotificationActionReceiver::class.java).apply {
                 action = NotificationActionReceiver.ACTION_MARK_DONE
                 putExtra(NotificationActionReceiver.EXTRA_TASK_ID, taskId)
@@ -117,7 +137,6 @@ object NotificationHelper {
             )
             builder.addAction(R.mipmap.ic_launcher, "Mark Done", markDonePendingIntent)
 
-            // Action 2: Snooze 15m
             val snoozeIntent = Intent(context, NotificationActionReceiver::class.java).apply {
                 action = NotificationActionReceiver.ACTION_SNOOZE
                 putExtra(NotificationActionReceiver.EXTRA_TASK_ID, taskId)
@@ -135,7 +154,15 @@ object NotificationHelper {
             builder.addAction(R.mipmap.ic_launcher, "Snooze 15m", snoozePendingIntent)
         }
 
-        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(notificationId, builder.build())
+        val notification = builder.build()
+        // Keep ringing/vibrating until dismissed (or the 60s timeout), like a real alarm.
+        notification.flags = notification.flags or Notification.FLAG_INSISTENT
+
+        try {
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.notify(notificationId, notification)
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
     }
 }

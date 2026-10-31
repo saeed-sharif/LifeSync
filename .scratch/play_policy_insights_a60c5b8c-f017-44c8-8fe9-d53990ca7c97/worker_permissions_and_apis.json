@@ -1,0 +1,17 @@
+{
+  "domain": "Permissions and APIs",
+  "findings": [
+    {
+      "policy_id": "exact_alarm_policy",
+      "issue_summary": "The app requests the restricted 'android.permission.USE_EXACT_ALARM' permission in AndroidManifest.xml, but as a productivity task and routine planner, it does not qualify for this permission under Google Play policy.",
+      "severity": "IMPORTANT",
+      "files_involved": [
+        "app/src/main/AndroidManifest.xml",
+        "app/src/main/java/com/dalgeer/lifeplanner/util/AlarmScheduler.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/util/PermissionUtils.kt"
+      ],
+      "evidence": "app/src/main/AndroidManifest.xml line 6 declares <uses-permission android:name=\"android.permission.USE_EXACT_ALARM\" /> alongside SCHEDULE_EXACT_ALARM. The app is a task/routine planner (com.dalgeer.lifeplanner) using exact alarms for task and routine reminders in AlarmScheduler.kt.",
+      "recommendation": "Remove <uses-permission android:name=\"android.permission.USE_EXACT_ALARM\" /> from app/src/main/AndroidManifest.xml. Rely instead on android.permission.SCHEDULE_EXACT_ALARM with runtime checks using PermissionUtils.canScheduleExactAlarms()."
+    }
+  ]
+}

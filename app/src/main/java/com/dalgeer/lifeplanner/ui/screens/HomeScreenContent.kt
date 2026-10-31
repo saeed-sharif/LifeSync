@@ -1,5 +1,7 @@
 package com.dalgeer.lifeplanner.ui.screens
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
@@ -14,12 +16,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import org.koin.androidx.compose.koinViewModel
 import com.dalgeer.lifeplanner.navigation.BottomNavGraph
 import com.dalgeer.lifeplanner.navigation.NavTab
 import com.dalgeer.lifeplanner.presentation.viewmodel.GoalViewModel
 import com.dalgeer.lifeplanner.presentation.viewmodel.RoutineViewModel
 import com.dalgeer.lifeplanner.presentation.viewmodel.TaskViewModel
+import com.dalgeer.lifeplanner.ui.common.ExitConfirmationDialog
 import com.dalgeer.lifeplanner.ui.screens.goals.NewGoalBottomSheet
 import com.dalgeer.lifeplanner.ui.screens.home.AddNewBottomSheet
 import com.dalgeer.lifeplanner.ui.screens.routines.NewRoutineBottomSheet
@@ -34,16 +38,32 @@ fun HomeScreenContent(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToTaskDetail: (String) -> Unit = {}
 ) {
+    val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(NavTab.HOME) }
     var highlightedTaskId by remember { mutableStateOf<String?>(null) }
     var showQuickAddSheet by remember { mutableStateOf(false) }
     var showNewTaskSheet by remember { mutableStateOf(false) }
     var showNewRoutineSheet by remember { mutableStateOf(false) }
     var showNewGoalSheet by remember { mutableStateOf(false) }
+    var showExitDialog by remember { mutableStateOf(false) }
 
     val taskViewModel: TaskViewModel = koinViewModel()
     val routineViewModel: RoutineViewModel = koinViewModel()
     val goalViewModel: GoalViewModel = koinViewModel()
+
+    // Handle System Back Button
+    BackHandler(enabled = true) {
+        if (showQuickAddSheet || showNewTaskSheet || showNewRoutineSheet || showNewGoalSheet) {
+            showQuickAddSheet = false
+            showNewTaskSheet = false
+            showNewRoutineSheet = false
+            showNewGoalSheet = false
+        } else if (selectedTab != NavTab.HOME) {
+            selectedTab = NavTab.HOME
+        } else {
+            showExitDialog = true
+        }
+    }
 
     val animatedNavItems = remember {
         listOf(
@@ -107,15 +127,13 @@ fun HomeScreenContent(
                     onFabClick = { showQuickAddSheet = true },
                     fabBackgroundColor = PrimaryPurple,
                     fabIconTint = Color.White,
-                    navBarBackgroundColor = White,
+                    navBarBackgroundColor = CardSurface,
                     unselectedIconTint = TextGray,
                     unselectedTextColor = TextGray
                 )
             }
         }
     ) { innerPadding ->
-        com.dalgeer.lifeplanner.ui.common.NotificationAndAlarmPermissionHandler()
-
         BottomNavGraph(
             selectedTab = selectedTab,
             onSelectTab = { tab ->
@@ -132,15 +150,27 @@ fun HomeScreenContent(
             },
             expandCompletedTasks = expandCompletedTasks,
             highlightedTaskId = highlightedTaskId,
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+            modifier = Modifier.padding(innerPadding)
         )
-        
+
+        if (showExitDialog) {
+            ExitConfirmationDialog(
+                onConfirmExit = {
+                    showExitDialog = false
+                    (context as? Activity)?.finish()
+                },
+                onDismiss = {
+                    showExitDialog = false
+                }
+            )
+        }
+
         if (showQuickAddSheet) {
             AddNewBottomSheet(
                 onDismiss = { showQuickAddSheet = false },
-                onOptionSelect = { option ->
+                onOptionSelect = { optionType ->
                     showQuickAddSheet = false
-                    when (option) {
+                    when (optionType) {
                         "Task" -> showNewTaskSheet = true
                         "Routine" -> showNewRoutineSheet = true
                         "Goal" -> showNewGoalSheet = true

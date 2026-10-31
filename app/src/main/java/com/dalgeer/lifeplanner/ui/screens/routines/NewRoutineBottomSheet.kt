@@ -2,7 +2,6 @@ package com.dalgeer.lifeplanner.ui.screens.routines
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -10,8 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.Assignment
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.Notes
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -28,13 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dalgeer.lifeplanner.data.model.*
+import com.dalgeer.lifeplanner.ui.common.CustomTimePickerDialog
 import com.dalgeer.lifeplanner.ui.theme.*
 
-
-import com.dalgeer.lifeplanner.ui.common.*
-import com.dalgeer.lifeplanner.ui.screens.*
-
-// 6. Add New Routine Sheet
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewRoutineBottomSheet(
@@ -73,7 +67,7 @@ fun NewRoutineBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = White,
+        containerColor = CardSurface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         dragHandle = {
             Box(
@@ -81,7 +75,7 @@ fun NewRoutineBottomSheet(
                     .padding(top = 12.dp, bottom = 8.dp)
                     .size(width = 38.dp, height = 4.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE2E8F0))
+                    .background(DividerColor)
             )
         }
     ) {
@@ -104,7 +98,7 @@ fun NewRoutineBottomSheet(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(14.dp))
-                            .background(Color(0xFFF0EFFF)),
+                            .background(IconBoxBg),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -138,7 +132,7 @@ fun NewRoutineBottomSheet(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close",
-                        tint = Color(0xFF6B7280),
+                        tint = TextDark,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -146,7 +140,7 @@ fun NewRoutineBottomSheet(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            // Preset Category Cards (Morning, Evening, Night, Custom)
+            // Preset Category Cards
             data class RoutinePresetUi(
                 val type: RoutineTimeOfDay,
                 val subtitle: String,
@@ -157,43 +151,42 @@ fun NewRoutineBottomSheet(
                 val selectedBorderColor: Color
             )
 
-            val isDark = MaterialTheme.colorScheme.background == ScreenBackgroundDark
             val presets = listOf(
                 RoutinePresetUi(
                     RoutineTimeOfDay.Morning,
                     "Start your day with purpose",
                     Icons.Outlined.WbSunny,
-                    if (isDark) Color(0xFF162B28) else Color(0xFFEAF7F1),
-                    if (isDark) Color(0xFF1F3D37) else Color(0xFFCBECE0),
-                    if (isDark) Color(0xFF00E676) else Color(0xFF00A878),
-                    if (isDark) Color(0xFF00E676) else Color(0xFF00A878)
+                    if (isDarkTheme) SurfaceVariantDark else Color(0xFFEAF7F1),
+                    if (isDarkTheme) LightGreenDark else Color(0xFFCBECE0),
+                    if (isDarkTheme) SuccessGreenDark else Color(0xFF00A878),
+                    if (isDarkTheme) SuccessGreenDark else Color(0xFF00A878)
                 ),
                 RoutinePresetUi(
                     RoutineTimeOfDay.Evening,
                     "Wind down and be present",
                     Icons.Outlined.Nightlight,
-                    if (isDark) Color(0xFF241B3B) else Color(0xFFF3F0FF),
-                    if (isDark) Color(0xFF332A52) else Color(0xFFE2DDFF),
-                    if (isDark) Color(0xFF8B84FF) else Color(0xFF6C63FF),
-                    if (isDark) Color(0xFF8B84FF) else Color(0xFF6C63FF)
+                    if (isDarkTheme) SurfaceVariantDark else Color(0xFFF3F0FF),
+                    if (isDarkTheme) PrimaryContainerDark else Color(0xFFE2DDFF),
+                    if (isDarkTheme) PrimaryPurpleDark else Color(0xFF6C63FF),
+                    if (isDarkTheme) PrimaryPurpleDark else Color(0xFF6C63FF)
                 ),
                 RoutinePresetUi(
                     RoutineTimeOfDay.Night,
                     "End the day with a goal",
                     Icons.Outlined.Star,
-                    if (isDark) Color(0xFF2E1F1A) else Color(0xFFFFF3EA),
-                    if (isDark) Color(0xFF422C23) else Color(0xFFFFE2CE),
-                    if (isDark) Color(0xFFFFB300) else Color(0xFFFF6B00),
-                    if (isDark) Color(0xFFFFB300) else Color(0xFFFF6B00)
+                    if (isDarkTheme) SurfaceVariantDark else Color(0xFFFFF3EA),
+                    if (isDarkTheme) Color(0xFF3D2A12) else Color(0xFFFFE2CE),
+                    if (isDarkTheme) Color(0xFFFFB74D) else Color(0xFFFF6B00),
+                    if (isDarkTheme) Color(0xFFFFB74D) else Color(0xFFFF6B00)
                 ),
                 RoutinePresetUi(
                     RoutineTimeOfDay.Custom,
                     "Create your own routine",
                     Icons.Outlined.TrackChanges,
-                    if (isDark) Color(0xFF2D1B28) else Color(0xFFFFF0F5),
-                    if (isDark) Color(0xFF422338) else Color(0xFFFFD6E8),
-                    if (isDark) Color(0xFFF472B6) else Color(0xFFEC4899),
-                    if (isDark) Color(0xFFF472B6) else Color(0xFFEC4899)
+                    if (isDarkTheme) SurfaceVariantDark else Color(0xFFFFF0F5),
+                    if (isDarkTheme) Color(0xFF422338) else Color(0xFFFFD6E8),
+                    if (isDarkTheme) Color(0xFFF472B6) else Color(0xFFEC4899),
+                    if (isDarkTheme) Color(0xFFF472B6) else Color(0xFFEC4899)
                 )
             )
 
@@ -213,7 +206,7 @@ fun NewRoutineBottomSheet(
                             },
                         shape = RoundedCornerShape(16.dp),
                         color = preset.bgColor,
-                        border = if (isSelected) BorderStroke(1.5.dp, preset.selectedBorderColor) else null
+                        border = if (isSelected) BorderStroke(1.5.dp, preset.selectedBorderColor) else BorderStroke(1.dp, DividerColor)
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (isSelected) {
@@ -285,7 +278,7 @@ fun NewRoutineBottomSheet(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Field 1: Routine Name (FULL Row Width)
+            // Field 1: Routine Name
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -298,50 +291,45 @@ fun NewRoutineBottomSheet(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(38.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(10.dp))
                             .background(IconBoxBg),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Description,
+                            imageVector = Icons.Outlined.Edit,
                             contentDescription = null,
                             tint = PrimaryPurple,
                             modifier = Modifier.size(18.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Routine Name",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextGray
+                            text = "ROUTINE NAME *",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = TextGray,
+                            letterSpacing = 0.5.sp
                         )
-                        val routinePlaceholder = when (selectedPreset) {
-                            RoutineTimeOfDay.Morning -> "e.g. Morning Stretch & Meditation"
-                            RoutineTimeOfDay.Evening -> "e.g. Evening Walk & Unwind"
-                            RoutineTimeOfDay.Night   -> "e.g. Read 20 Pages before Sleep"
-                            RoutineTimeOfDay.Custom  -> "e.g. Read 20 Minutes"
-                        }
+                        Spacer(modifier = Modifier.height(2.dp))
                         BasicTextField(
                             value = routineName,
-                            onValueChange = { if (it.length <= 50) routineName = it },
+                            onValueChange = { routineName = it },
                             cursorBrush = SolidColor(TextDark),
                             textStyle = TextStyle(
-                                fontSize = 14.sp,
+                                fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextDark
                             ),
                             decorationBox = { innerTextField ->
                                 if (routineName.isEmpty()) {
                                     Text(
-                                        text = routinePlaceholder,
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        color = Color.LightGray
+                                        text = "e.g. Morning Hydration",
+                                        fontSize = 15.sp,
+                                        color = TextGray
                                     )
                                 }
                                 innerTextField()
@@ -350,23 +338,17 @@ fun NewRoutineBottomSheet(
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-
-                    Text(
-                        text = "${routineName.length}/50",
-                        fontSize = 11.sp,
-                        color = Color.LightGray
-                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Field 2 & 3: Frequency & Time
+            // Field 2 & 3: Frequency & Time Pickers
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Frequency Field
+                // Frequency Dropdown
                 Box(modifier = Modifier.weight(1f)) {
                     Surface(
                         modifier = Modifier
@@ -382,55 +364,48 @@ fun NewRoutineBottomSheet(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .size(36.dp)
+                                    .clip(RoundedCornerShape(10.dp))
                                     .background(IconBoxBg),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.CalendarToday,
+                                    imageVector = Icons.Outlined.Repeat,
                                     contentDescription = null,
                                     tint = PrimaryPurple,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
+                            Spacer(modifier = Modifier.width(10.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "Frequency",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium,
+                                    text = "REPEAT",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
                                     color = TextGray
                                 )
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = frequency,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = TextDark
+                                    color = TextDark,
+                                    maxLines = 1
                                 )
                             }
-
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = null,
-                                tint = TextGray,
-                                modifier = Modifier.size(18.dp)
-                            )
                         }
                     }
 
                     DropdownMenu(
                         expanded = showFrequencyDropdown,
                         onDismissRequest = { showFrequencyDropdown = false },
-                        modifier = Modifier.background(White)
+                        modifier = Modifier.background(CardSurface)
                     ) {
-                        frequencyOptions.forEach { item ->
+                        frequencyOptions.forEach { opt ->
                             DropdownMenuItem(
-                                text = { Text(item, color = TextDark, fontWeight = FontWeight.Medium) },
+                                text = { Text(opt, color = TextDark) },
                                 onClick = {
-                                    frequency = item
+                                    frequency = opt
                                     showFrequencyDropdown = false
                                 }
                             )
@@ -438,314 +413,273 @@ fun NewRoutineBottomSheet(
                     }
                 }
 
-                // Time Field
-                Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { showCustomTimePicker = true },
-                    shape = RoundedCornerShape(16.dp),
-                    color = InputFieldBg,
-                    border = BorderStroke(1.dp, InputFieldBorder)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(IconBoxBg),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.AccessTime,
-                                contentDescription = null,
-                                tint = PrimaryPurple,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Time",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = TextGray
-                            )
-                            Text(
-                                text = time,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = TextDark
-                            )
-                        }
-
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = null,
-                            tint = TextGray,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-            }
-
-            if (frequency == "Custom" || frequency == "Custom Days") {
-                Spacer(modifier = Modifier.height(10.dp))
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    color = InputFieldBg,
-                    border = BorderStroke(1.dp, InputFieldBorder)
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(
-                            text = "Select Custom Days",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextGray
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun").forEach { day ->
-                                val isSelected = selectedCustomDays.contains(day)
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(CircleShape)
-                                        .background(if (isSelected) PrimaryPurple else DividerColor)
-                                        .clickable {
-                                            selectedCustomDays = if (isSelected) {
-                                                selectedCustomDays - day
-                                            } else {
-                                                selectedCustomDays + day
-                                            }
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = day.take(1),
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (isSelected) Color.White else TextDark
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Field 4: Reminder
-            Box(modifier = Modifier.fillMaxWidth()) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showReminderDropdown = true },
-                    shape = RoundedCornerShape(16.dp),
-                    color = InputFieldBg,
-                    border = BorderStroke(1.dp, InputFieldBorder)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(IconBoxBg),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Notifications,
-                                contentDescription = null,
-                                tint = PrimaryPurple,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Reminder",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = TextGray
-                            )
-                            Text(
-                                text = reminder,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = TextDark
-                            )
-                        }
-
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = null,
-                            tint = TextGray,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-
-                DropdownMenu(
-                    expanded = showReminderDropdown,
-                    onDismissRequest = { showReminderDropdown = false },
-                    modifier = Modifier.background(White)
-                ) {
-                    reminderOptions.forEach { item ->
-                        DropdownMenuItem(
-                            text = { Text(item, color = TextDark, fontWeight = FontWeight.Medium) },
-                            onClick = {
-                                reminder = item
-                                showReminderDropdown = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Field 5: Notes (Optional)
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = InputFieldBg,
-                border = BorderStroke(1.dp, InputFieldBorder)
-            ) {
-                Row(
-                    modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
+                // Time Picker Clickable Box
+                Column(modifier = Modifier.weight(1f)) {
+                    Surface(
                         modifier = Modifier
-                            .size(38.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(IconBoxBg),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .clickable { showCustomTimePicker = true },
+                        shape = RoundedCornerShape(16.dp),
+                        color = InputFieldBg,
+                        border = BorderStroke(1.dp, InputFieldBorder)
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Description,
-                            contentDescription = null,
-                            tint = PrimaryPurple,
-                            modifier = Modifier.size(18.dp)
-                        )
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(IconBoxBg),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Schedule,
+                                    contentDescription = null,
+                                    tint = PrimaryPurple,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "TIME",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextGray
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = time,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextDark,
+                                    maxLines = 1
+                                )
+                            }
+                        }
                     }
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Notes (Optional)",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextGray
-                        )
-                        BasicTextField(
-                            value = notes,
-                            onValueChange = { notes = it },
-                            cursorBrush = SolidColor(TextDark),
-                            textStyle = TextStyle(
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Normal,
-                                color = TextDark
-                            ),
-                            decorationBox = { innerTextField ->
-                                if (notes.isEmpty()) {
-                                    Text(
-                                        text = "Add a short note about your routine...",
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        color = Color.LightGray
-                                    )
-                                }
-                                innerTextField()
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = TextGray,
-                        modifier = Modifier.size(18.dp)
-                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            // Custom Day Selector Bar
+            if (frequency == "Custom") {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text("Select Days", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = TextDark)
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                    days.forEach { day ->
+                        val isDaySelected = selectedCustomDays.contains(day)
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(if (isDaySelected) PrimaryPurple else SurfaceVariantColor)
+                                .clickable {
+                                    selectedCustomDays = if (isDaySelected) {
+                                        selectedCustomDays - day
+                                    } else {
+                                        selectedCustomDays + day
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = day.take(1),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isDaySelected) Color.White else TextDark
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Field 4 & 5: Reminder & Notes
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Reminder Dropdown Box
+                Box(modifier = Modifier.weight(1f)) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showReminderDropdown = true },
+                        shape = RoundedCornerShape(16.dp),
+                        color = InputFieldBg,
+                        border = BorderStroke(1.dp, InputFieldBorder)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(IconBoxBg),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Notifications,
+                                    contentDescription = null,
+                                    tint = PrimaryPurple,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "REMINDER",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextGray
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = reminder,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextDark,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+
+                    DropdownMenu(
+                        expanded = showReminderDropdown,
+                        onDismissRequest = { showReminderDropdown = false },
+                        modifier = Modifier.background(CardSurface)
+                    ) {
+                        reminderOptions.forEach { opt ->
+                            DropdownMenuItem(
+                                text = { Text(opt, color = TextDark) },
+                                onClick = {
+                                    reminder = opt
+                                    showReminderDropdown = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Notes Input Box
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(16.dp),
+                    color = InputFieldBg,
+                    border = BorderStroke(1.dp, InputFieldBorder)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(IconBoxBg),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.Notes,
+                                contentDescription = null,
+                                tint = PrimaryPurple,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "NOTES",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TextGray
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            BasicTextField(
+                                value = notes,
+                                onValueChange = { notes = it },
+                                cursorBrush = SolidColor(TextDark),
+                                textStyle = TextStyle(
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextDark
+                                ),
+                                decorationBox = { innerTextField ->
+                                    if (notes.isEmpty()) {
+                                        Text(
+                                            text = "Optional",
+                                            fontSize = 14.sp,
+                                            color = TextGray
+                                        )
+                                    }
+                                    innerTextField()
+                                },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+            }
 
             errorMessage?.let { msg ->
-                Text(
-                    text = msg,
-                    color = ErrorRed,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = msg, color = ErrorRed, fontSize = 12.sp, fontWeight = FontWeight.Medium)
             }
 
-            // Action Button: Add Routine
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Save Routine Button
             Button(
                 onClick = {
                     if (routineName.isBlank()) {
-                        errorMessage = "Routine name is compulsory!"
-                        return@Button
+                        errorMessage = "Please enter a routine name"
+                    } else {
+                        val freqEnum = when (frequency) {
+                            "Weekdays" -> RoutineFrequency.Weekdays
+                            "Weekends" -> RoutineFrequency.Weekends
+                            "Weekly" -> RoutineFrequency.Weekly
+                            "Custom" -> RoutineFrequency.Custom
+                            else -> RoutineFrequency.Daily
+                        }
+                        val routine = RoutineModel(
+                            id = java.util.UUID.randomUUID().toString(),
+                            name = routineName.trim(),
+                            timeOfDay = selectedPreset,
+                            frequency = freqEnum,
+                            customDays = if (freqEnum == RoutineFrequency.Custom) selectedCustomDays.joinToString(", ") else "",
+                            time = time,
+                            reminder = reminder != "Off",
+                            notes = notes.trim(),
+                            streak = 0,
+                            isCompletedToday = false
+                        )
+                        onSave(routine)
                     }
-                    errorMessage = null
-                    val freqEnum = when (frequency) {
-                        "Weekly" -> RoutineFrequency.Weekly
-                        "Weekdays" -> RoutineFrequency.Weekdays
-                        "Weekends" -> RoutineFrequency.Weekends
-                        "Custom", "Custom Days" -> RoutineFrequency.Custom
-                        else -> RoutineFrequency.Daily
-                    }
-                    val newRoutine = RoutineModel(
-                        name = routineName,
-                        timeOfDay = selectedPreset,
-                        frequency = freqEnum,
-                        customDays = if (freqEnum == RoutineFrequency.Custom) selectedCustomDays.joinToString(",") else "",
-                        time = time,
-                        reminder = reminder == "On" || reminder.contains("before"),
-                        notes = notes,
-                        streak = 0,
-                        isCompletedToday = false
-                    )
-                    onSave(newRoutine)
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
                 shape = RoundedCornerShape(16.dp),
-                contentPadding = PaddingValues(vertical = 14.dp)
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        tint = White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Add Routine",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = White
-                    )
-                }
+                Text(
+                    text = "Save Routine",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
             }
 
             Spacer(modifier = Modifier.height(20.dp))

@@ -1,7 +1,6 @@
 package com.dalgeer.lifeplanner.ui.screens.routines
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,7 +8,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.*
@@ -27,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dalgeer.lifeplanner.data.model.RoutineModel
 import com.dalgeer.lifeplanner.data.model.getRoutineColor
@@ -52,14 +49,13 @@ fun RoutinesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(ScreenBackground)
-                .statusBarsPadding()
                 .padding(horizontal = PaddingLarge)
         ) {
             // FIXED Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 12.dp),
+                    .padding(top = 8.dp, bottom = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -82,7 +78,7 @@ fun RoutinesScreen(
                     val maxStreak = currentRoutines.maxOfOrNull { it.streak } ?: 0
 
                     Surface(
-                        color = Color(0xFFFFF3E0),
+                        color = if (isDarkTheme) Color(0xFF3D2612) else Color(0xFFFFF3E0),
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
@@ -90,7 +86,7 @@ fun RoutinesScreen(
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("🔥 $maxStreak day streak", style = Typography.bodyMedium, fontWeight = FontWeight.Bold, color = Color(0xFFF57C00))
+                            Text("🔥 $maxStreak day streak", style = Typography.bodyMedium, fontWeight = FontWeight.Bold, color = if (isDarkTheme) Color(0xFFFFB74D) else Color(0xFFF57C00))
                         }
                     }
                 }
@@ -118,7 +114,7 @@ fun RoutinesScreen(
                         val routines = state.data
                         val maxStreak = routines.maxOfOrNull { it.streak } ?: 0
 
-                        // Rich Streak Summary Banner Card with Dynamic Streak
+                        // Streak Banner Card
                         StreakSummaryBannerCard(streak = maxStreak)
 
                         Spacer(modifier = Modifier.height(24.dp))
@@ -150,7 +146,7 @@ fun RoutinesScreen(
                                     .fillMaxWidth()
                                     .shadow(CardElevation, RoundedCornerShape(20.dp)),
                                 shape = RoundedCornerShape(20.dp),
-                                color = White
+                                color = CardSurface
                             ) {
                                 Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
                                     Text("No routines added yet. Tap + Add Habit.", style = Typography.bodyMedium, color = TextGray)
@@ -280,7 +276,7 @@ fun RichRoutineGroupCard(
             .fillMaxWidth()
             .shadow(CardElevation, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
-        color = White
+        color = CardSurface
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -325,7 +321,7 @@ fun RichRoutineGroupCard(
                     .height(6.dp)
                     .clip(CircleShape),
                 color = iconTint,
-                trackColor = Color(0xFFF0F2F8)
+                trackColor = if (isDarkTheme) DividerColorDark else Color(0xFFF0F2F8)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -346,7 +342,7 @@ fun RichRoutineGroupCard(
                         Icon(
                             imageVector = if (routine.isCompletedToday) Icons.Default.CheckCircle else Icons.Outlined.Circle,
                             contentDescription = null,
-                            tint = if (routine.isCompletedToday) SuccessGreen else Color.LightGray,
+                            tint = if (routine.isCompletedToday) SuccessGreen else TextGray,
                             modifier = Modifier.size(22.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
@@ -368,26 +364,32 @@ fun RichRoutineGroupCard(
                             Text(
                                 text = routine.name,
                                 style = Typography.bodyLarge,
-                                color = if (routine.isCompletedToday) TextDark else TextGray,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = TextDark
                             )
-                            Text(
-                                text = "Streak: ${routine.streak} days • Time: ${routine.time}",
-                                style = Typography.bodySmall,
-                                color = Color(0xFFF57C00)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = routine.time,
+                                    style = Typography.bodyMedium,
+                                    color = TextGray
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "🔥 ${routine.streak}d streak",
+                                    style = Typography.bodyMedium,
+                                    color = iconTint,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                        IconButton(onClick = { onDelete(routine.id) }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = TextGray,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
-                        IconButton(onClick = { onDelete(routine.id) }, modifier = Modifier.size(32.dp)) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = TextGray, modifier = Modifier.size(18.dp))
-                        }
-                    }
-                    if (routine != routines.last()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(DividerColor)
-                        )
                     }
                 }
             }
@@ -402,28 +404,40 @@ fun RoutineTipCard() {
             .fillMaxWidth()
             .shadow(CardElevation, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
-        color = Color(0xFFF5F7FA)
+        color = if (isDarkTheme) PrimaryContainerDark else Color(0xFFF0EFFF)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .background(LightPurple, CircleShape),
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .background(PrimaryPurple),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Outlined.AutoAwesome, contentDescription = null, tint = PrimaryPurple, modifier = Modifier.size(24.dp))
+                Icon(
+                    imageVector = Icons.Outlined.Lightbulb,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp)
+                )
             }
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Tip of the Day", style = Typography.titleMedium, color = PrimaryPurple)
-                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Consistency is the key to success. Small actions every day lead to big results.",
-                    style = Typography.bodyLarge,
-                    color = TextGray
+                    text = "Habit Stacking Tip 💡",
+                    style = Typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Attach a new routine to an existing habit to build consistency faster!",
+                    style = Typography.bodyMedium,
+                    color = TextGray,
+                    lineHeight = 18.sp
                 )
             }
         }

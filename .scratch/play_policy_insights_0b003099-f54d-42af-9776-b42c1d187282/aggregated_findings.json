@@ -1,0 +1,161 @@
+{
+    "findings": [
+        {
+            "psl_constant": "RACE_ETHNICITY",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "app/src/main/java/com/dalgeer/lifeplanner/LifePlannerApplication.kt",
+                "app/src/main/java/com/dalgeer/lifeplanner/receiver/BootReceiver.kt",
+                "app/src/main/java/com/dalgeer/lifeplanner/receiver/NotificationActionReceiver.kt"
+            ],
+            "evidence": "No race or ethnicity data is collected, stored, or transmitted by the app. Analysis of LifePlannerApplication.kt, BootReceiver.kt, and NotificationActionReceiver.kt confirmed no reference or transfer of race/ethnicity data.",
+            "recommendation": "No action required. Race/Ethnicity data is neither collected nor transferred off-device.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_1.json",
+            "finding_id": "1"
+        },
+        {
+            "psl_constant": "NAME",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "app/src/main/java/com/dalgeer/lifeplanner/data/preferences/AppPreferences.kt"
+            ],
+            "evidence": "User name is stored locally in SharedPreferences (KEY_USER_NAME) via AppPreferences.kt for display in the app UI. No off-device transmission or network transfer was detected.",
+            "recommendation": "No action required. User name is stored strictly on-device for local app functionality.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "App functionality",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_1.json",
+            "finding_id": "2"
+        },
+        {
+            "psl_constant": "PERFORMANCE_DIAGNOSTICS",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "app/src/main/java/com/dalgeer/lifeplanner/receiver/NotificationReceiver.kt",
+                "app/src/main/java/com/dalgeer/lifeplanner/util/PermissionUtils.kt"
+            ],
+            "evidence": "PowerManager usage in NotificationReceiver.kt and PermissionUtils.kt is strictly for local wake lock management during notification delivery and checking battery optimization settings. No performance or diagnostic data is collected or transmitted off-device.",
+            "recommendation": "No action required. PowerManager interaction is used purely for local system integration.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_1.json",
+            "finding_id": "3"
+        },
+        {
+            "psl_constant": "MUSIC",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "app/src/main/java/com/dalgeer/lifeplanner/ui/common/PermissionHandler.kt",
+                "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/OnboardingScreen.kt",
+                "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/goals/GoalsScreen.kt"
+            ],
+            "evidence": "The pattern 'track' in PermissionHandler.kt, OnboardingScreen.kt, and GoalsScreen.kt refers strictly to UI strings (e.g., habit tracking, progress tracking) and icon names. No music files are accessed, collected, or transmitted.",
+            "recommendation": "No action required. User music data is neither collected nor transmitted off-device.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_2.json",
+            "finding_id": "4"
+        },
+        {
+            "psl_constant": "AUDIO",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/settings/SettingsScreen.kt"
+            ],
+            "evidence": "The pattern 'record' in SettingsScreen.kt corresponds to UI text describing system restart logs ('No boot event recorded yet'). No voice or audio recordings are created, collected, or transmitted.",
+            "recommendation": "No action required. Audio data is neither collected nor transmitted off-device.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_2.json",
+            "finding_id": "5"
+        },
+        {
+            "psl_constant": "FILES_AND_DOCS",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/settings/SettingsScreen.kt"
+            ],
+            "evidence": "The pattern 'Realm' in SettingsScreen.kt is a substring match for the device OEM brand name 'Realme' in autostart settings guidance. No user files or documents are accessed, collected, or transmitted.",
+            "recommendation": "No action required. Files and documents are neither collected nor transmitted off-device.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_2.json",
+            "finding_id": "6"
+        },
+        {
+            "psl_constant": "APPS_ON_DEVICE",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "app/src/main/java/com/dalgeer/lifeplanner/ui/screens/settings/SettingsScreen.kt"
+            ],
+            "evidence": "The call 'getPackageInfo(context.packageName, 0)' in getAppVersionInfo() retrieves version information for the app's own package to display in Settings. It does not inspect other installed applications, and no app list data is transmitted.",
+            "recommendation": "No action required. Information regarding installed applications is neither collected nor transmitted off-device.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_2.json",
+            "finding_id": "7"
+        },
+        {
+            "psl_constant": "OTHER_AUDIO",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "app/src/main/java/com/dalgeer/lifeplanner/util/NotificationHelper.kt"
+            ],
+            "evidence": "NotificationHelper.kt uses RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) to retrieve system alarm sound URIs solely for local notification channel playback. No user audio data is collected or transmitted off-device.",
+            "recommendation": "No changes required. System ringtone URI usage is local-only and compliant with Data Safety policy.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_3.json",
+            "finding_id": "8"
+        }
+    ]
+}

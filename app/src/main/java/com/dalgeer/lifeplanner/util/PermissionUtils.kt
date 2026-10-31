@@ -1,7 +1,6 @@
 package com.dalgeer.lifeplanner.util
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.content.ComponentName
 import android.content.Context
@@ -15,10 +14,7 @@ import androidx.core.content.ContextCompat
 
 object PermissionUtils {
 
-    /**
-     * Checks if notification permission is granted.
-     * Required for Android 13+ (API 33).
-     */
+    /** Notification permission (Android 13+). */
     fun hasNotificationPermission(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
@@ -30,10 +26,7 @@ object PermissionUtils {
         }
     }
 
-    /**
-     * Checks if exact alarm scheduling is allowed.
-     * Required for Android 12+ (API 31).
-     */
+    /** Exact alarm permission (Android 12+). Denied by default on Android 14+. */
     fun canScheduleExactAlarms(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -43,9 +36,6 @@ object PermissionUtils {
         }
     }
 
-    /**
-     * Checks if app is exempted from battery optimizations (Doze mode).
-     */
     fun isIgnoringBatteryOptimizations(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -56,35 +46,44 @@ object PermissionUtils {
     }
 
     /**
-     * Requests system prompt to ignore battery optimizations for LifePlanner.
+     * Kept for existing callers (e.g. Settings screen). Now opens the system battery-optimization
+     * LIST screen (no special permission / Play restriction) instead of the direct prompt.
      */
-    @SuppressLint("BatteryLife")
     fun requestIgnoreBatteryOptimizations(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                if (!isIgnoringBatteryOptimizations(context)) {
-                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                        data = Uri.parse("package:${context.packageName}")
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-                    context.startActivity(intent)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+        openBatterySettings(context)
     }
 
-    /**
-     * Opens manufacturer-specific Autostart / Background management screen for OEM devices
-     * (Xiaomi, Vivo, Oppo, Realme, Samsung, Huawei, etc.).
-     */
+    private fun isXiaomiFamily(): Boolean {
+        val m = Build.MANUFACTURER.lowercase()
+        return m.contains("xiaomi") || m.contains("redmi") || m.contains("poco")
+    }
+
+    /** True on OEMs that kill background apps / block autostart (alarms stop working there). */
+    fun needsOemBackgroundSetup(): Boolean {
+        val m = Build.MANUFACTURER.lowercase()
+        return isXiaomiFamily() || m.contains("vivo") || m.contains("iqoo") ||
+                m.contains("oppo") || m.contains("realme") || m.contains("oneplus") ||
+                m.contains("huawei") || m.contains("honor") || m.contains("samsung")
+    }
+
+    /** Opens the manufacturer's Autostart / background-start screen (Xiaomi, Vivo, Oppo...). */
     fun openAutoStartSettings(context: Context) {
         val manufacturer = Build.MANUFACTURER.lowercase()
-        val intentList = when {
-            manufacturer.contains("xiaomi") || manufacturer.contains("redmi") || manufacturer.contains("poco") -> listOf(
-                Intent().setComponent(ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")),
-                Intent().setComponent(ComponentName("com.miui.securitycenter", "com.miui.powercenter.PowerSettings"))
+        val intentList: List<Intent> = when {
+            isXiaomiFamily() -> listOf(
+                Intent().setComponent(
+                    ComponentName(
+                        "com.miui.securitycenter",
+                        "com.miui.permcenter.autostart.AutoStartManagementActivity"
+                    )
+                ),
+                Intent("miui.intent.action.OP_AUTO_START").addCategory(Intent.CATEGORY_DEFAULT),
+                Intent().setComponent(
+                    ComponentName(
+                        "com.miui.securitycenter",
+                        "com.miui.powercenter.PowerSettings"
+                    )
+                )
             )
             manufacturer.contains("vivo") || manufacturer.contains("iqoo") -> listOf(
                 Intent().setComponent(ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")),
@@ -97,7 +96,7 @@ object PermissionUtils {
                 Intent().setComponent(ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity"))
             )
             manufacturer.contains("samsung") -> listOf(
-                Intent().setComponent(ComponentName("com.samsung.android.looper", "com.samsung.android.sm.ui.battery.BatteryActivity")),
+                Intent().setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity")),
                 Intent().setComponent(ComponentName("com.samsung.android.sm", "com.samsung.android.sm.ui.battery.BatteryActivity"))
             )
             manufacturer.contains("huawei") || manufacturer.contains("honor") -> listOf(
@@ -113,17 +112,52 @@ object PermissionUtils {
                 context.startActivity(intent)
                 return
             } catch (e: Exception) {
-                // Try next intent fallback
+                // try next fallback
             }
         }
 
-        // Fallback to app details settings
-        openNotificationSettings(context)
+        openAppDetailsSettings(context)
     }
 
     /**
-     * Opens system settings to request Exact Alarm permission (Android 12+).
+     * Opens the battery screen. On Xiaomi/MIUI/HyperOS this is the "Battery saver" page for the app
+     * where "No restrictions" must be selected. Other phones get the system battery optimisation list.
      */
+    fun openBatterySettings(context: Context) {
+        if (isXiaomiFamily()) {
+            try {
+                val intent = Intent().apply {
+                    component = ComponentName(
+                        "com.miui.powerkeeper",
+                        "com.miui.powerkeeper.ui.HiddenAppsConfigActivity"
+                    )
+                    putExtra("package_name", context.packageName)
+                    putExtra("package_label", context.applicationInfo.loadLabel(context.packageManager).toString())
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
+                return
+            } catch (e: Exception) {
+                // fall through
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
+                return
+            } catch (e: Exception) {
+                // fall through
+            }
+        }
+
+        openAppDetailsSettings(context)
+    }
+
+    /** Opens the exact alarm permission screen (Android 12+). */
     fun openExactAlarmSettings(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             try {
@@ -133,14 +167,12 @@ object PermissionUtils {
                 }
                 context.startActivity(intent)
             } catch (e: Exception) {
-                openNotificationSettings(context)
+                openAppDetailsSettings(context)
             }
         }
     }
 
-    /**
-     * Opens system settings for app notifications & details.
-     */
+    /** App notification settings (channels, lock screen, pop-up). */
     fun openNotificationSettings(context: Context) {
         try {
             val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -153,6 +185,19 @@ object PermissionUtils {
                     data = Uri.fromParts("package", context.packageName, null)
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            openAppDetailsSettings(context)
+        }
+    }
+
+    /** App info page (on MIUI this has "Other permissions": lock-screen, pop-up windows). */
+    fun openAppDetailsSettings(context: Context) {
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", context.packageName, null)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
             context.startActivity(intent)
         } catch (e: Exception) {

@@ -128,7 +128,7 @@ fun ProfileSetupScreen(
                             .background(preset.bgColor)
                             .then(
                                 if (isSelected) {
-                                    Modifier.border(2.dp, PrimaryPurple, CircleShape)
+                                    Modifier.border(2.5.dp, PrimaryPurple, CircleShape)
                                 } else Modifier
                             )
                             .clickable { selectedAvatarIndex = preset.id },
@@ -184,8 +184,8 @@ fun ProfileSetupScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = White,
-                        unfocusedContainerColor = White,
+                        focusedContainerColor = CardSurface,
+                        unfocusedContainerColor = CardSurface,
                         focusedBorderColor = PrimaryPurple,
                         unfocusedBorderColor = DividerColor,
                         cursorColor = TextDark,
@@ -211,16 +211,20 @@ fun ProfileSetupScreen(
                     .shadow(
                         elevation = 8.dp,
                         shape = RoundedCornerShape(16.dp),
-                        ambientColor = PrimaryPurple.copy(alpha = 0.3f)
+                        ambientColor = PrimaryPurple.copy(alpha = 0.4f),
+                        spotColor = PrimaryPurple.copy(alpha = 0.4f)
                     ),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PrimaryPurple,
+                    contentColor = Color.White
+                ),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
                     text = if (isEditMode) "Save Changes" else "Get Started",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = White
+                    color = Color.White
                 )
             }
         }

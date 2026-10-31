@@ -19,11 +19,13 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action ?: return
+        val appContext = context.applicationContext
         val taskId = intent.getStringExtra(EXTRA_TASK_ID)
         val routineId = intent.getStringExtra(EXTRA_ROUTINE_ID)
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, 1001)
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(notificationId)
 
         when (action) {
@@ -31,20 +33,19 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 val pendingResult = goAsync()
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val db = AppDatabase.getInstance(context)
+                        val db = AppDatabase.getInstance(appContext)
                         if (taskId != null) {
                             val taskDao = db.taskDao()
-                            val taskEntityList = taskDao.getAllTasks().first()
-                            val taskEntity = taskEntityList.find { it.id == taskId }
+                            val taskEntity = taskDao.getAllTasks().first().find { it.id == taskId }
                             if (taskEntity != null) {
                                 val updatedTask = taskEntity.toModel().copy(status = TaskStatus.Completed)
                                 taskDao.updateTask(TaskEntity.fromModel(updatedTask))
                             }
-                            AlarmScheduler.cancelTaskReminder(context, taskId)
+                            // Cancels main alarm + pending snooze
+                            AlarmScheduler.cancelTaskReminder(appContext, taskId)
                         } else if (routineId != null) {
                             val routineDao = db.routineDao()
-                            val routineEntityList = routineDao.getAllRoutines().first()
-                            val routineEntity = routineEntityList.find { it.id == routineId }
+                            val routineEntity = routineDao.getAllRoutines().first().find { it.id == routineId }
                             if (routineEntity != null) {
                                 val routine = routineEntity.toModel()
                                 val updatedRoutine = routine.copy(
@@ -53,6 +54,8 @@ class NotificationActionReceiver : BroadcastReceiver() {
                                 )
                                 routineDao.updateRoutine(RoutineEntity.fromModel(updatedRoutine))
                             }
+                            // Only the snooze is cancelled; the daily alarm keeps running.
+                            AlarmScheduler.cancelSnooze(appContext, routineId.hashCode())
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -65,34 +68,22 @@ class NotificationActionReceiver : BroadcastReceiver() {
             ACTION_SNOOZE -> {
                 val title = intent.getStringExtra(EXTRA_TITLE) ?: "Snoozed Reminder 📌"
                 val message = intent.getStringExtra(EXTRA_MESSAGE) ?: "Reminder snoozed for 15 minutes."
-
-                // Schedule snooze alarm 15 minutes (900,000 ms) from now
-                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
-                val snoozeTimeMillis = System.currentTimeMillis() + (15 * 60 * 1000)
-
-                val snoozeIntent = Intent(context, NotificationReceiver::class.java).apply {
-                    putExtra(NotificationReceiver.EXTRA_TITLE, title)
-                    putExtra(NotificationReceiver.EXTRA_MESSAGE, message)
-                    putExtra(NotificationReceiver.EXTRA_NOTIFICATION_ID, notificationId)
-                    putExtra(NotificationReceiver.EXTRA_CHANNEL_ID, NotificationHelper.CHANNEL_TASK_REMINDERS)
+                val channelId = if (routineId != null) {
+                    NotificationHelper.CHANNEL_ROUTINE_REMINDERS
+                } else {
+                    NotificationHelper.CHANNEL_TASK_REMINDERS
                 }
 
-                val pendingIntent = android.app.PendingIntent.getBroadcast(
-                    context,
-                    notificationId,
-                    snoozeIntent,
-                    android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
+                // taskId / routineId are passed on so the snoozed notification keeps its buttons.
+                AlarmScheduler.scheduleSnooze(
+                    context = appContext,
+                    title = title,
+                    message = message,
+                    notificationId = notificationId,
+                    channelId = channelId,
+                    taskId = taskId,
+                    routineId = routineId
                 )
-
-                try {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                        alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, snoozeTimeMillis, pendingIntent)
-                    } else {
-                        alarmManager.setExact(android.app.AlarmManager.RTC_WAKEUP, snoozeTimeMillis, pendingIntent)
-                    }
-                } catch (e: SecurityException) {
-                    e.printStackTrace()
-                }
             }
         }
     }

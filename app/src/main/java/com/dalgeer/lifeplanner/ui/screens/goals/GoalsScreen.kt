@@ -1,5 +1,6 @@
 package com.dalgeer.lifeplanner.ui.screens.goals
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
@@ -14,7 +16,6 @@ import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -28,15 +29,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.text.BasicTextField
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dalgeer.lifeplanner.data.model.GoalModel
 import com.dalgeer.lifeplanner.data.model.calculateProgressRatio
-import com.dalgeer.lifeplanner.data.model.getTargetFloat
 import com.dalgeer.lifeplanner.presentation.uiState.UiState
 import com.dalgeer.lifeplanner.presentation.viewmodel.GoalViewModel
 import com.dalgeer.lifeplanner.ui.components.AppFloatingActionButton
@@ -57,14 +54,13 @@ fun GoalsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(ScreenBackground)
-                .statusBarsPadding()
                 .padding(horizontal = PaddingLarge)
         ) {
             // FIXED Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 12.dp),
+                    .padding(top = 8.dp, bottom = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -231,7 +227,7 @@ fun GoalsScreen(
                     )
 
                     Surface(
-                        color = Color(0xFFF0EFFF),
+                        color = IconBoxBg,
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(
@@ -271,7 +267,7 @@ fun GoalsScreen(
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
-                                color = White
+                                color = CardSurface
                             ) {
                                 Box(
                                     modifier = Modifier.padding(32.dp),
@@ -345,10 +341,10 @@ fun GoalCardDynamicItem(
     var expanded by remember { mutableStateOf(false) }
 
     val (icon, iconColor, iconBgColor) = when (goal.type) {
-        com.dalgeer.lifeplanner.data.model.GoalType.Personal -> Triple(Icons.Outlined.TrackChanges, Color(0xFF6C63FF), Color(0xFFE2DDFF))
-        com.dalgeer.lifeplanner.data.model.GoalType.Career -> Triple(Icons.AutoMirrored.Outlined.MenuBook, Color(0xFF2563EB), Color(0xFFDBEAFE))
-        com.dalgeer.lifeplanner.data.model.GoalType.Fitness -> Triple(Icons.Outlined.FavoriteBorder, Color(0xFFFF6B00), Color(0xFFFFE2CE))
-        com.dalgeer.lifeplanner.data.model.GoalType.Financial -> Triple(Icons.Outlined.AccountBalanceWallet, Color(0xFF00A878), Color(0xFFCBECE0))
+        com.dalgeer.lifeplanner.data.model.GoalType.Personal -> Triple(Icons.Outlined.TrackChanges, PrimaryPurple, if (isDarkTheme) PrimaryContainerDark else Color(0xFFE2DDFF))
+        com.dalgeer.lifeplanner.data.model.GoalType.Career -> Triple(Icons.AutoMirrored.Outlined.MenuBook, Color(0xFF42A5F5), if (isDarkTheme) SurfaceVariantDark else Color(0xFFDBEAFE))
+        com.dalgeer.lifeplanner.data.model.GoalType.Fitness -> Triple(Icons.Outlined.FavoriteBorder, Color(0xFFFFB74D), if (isDarkTheme) Color(0xFF3D2A12) else Color(0xFFFFE2CE))
+        com.dalgeer.lifeplanner.data.model.GoalType.Financial -> Triple(Icons.Outlined.AccountBalanceWallet, SuccessGreen, if (isDarkTheme) LightGreenDark else Color(0xFFCBECE0))
     }
 
     val displayProgress = goal.calculateProgressRatio()
@@ -367,12 +363,12 @@ fun GoalCardDynamicItem(
             )
             .border(
                 width = 1.dp,
-                color = Color(0xFFEEF0F6),
+                color = DividerColor,
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable { onUpdateProgress() },
         shape = RoundedCornerShape(16.dp),
-        color = White
+        color = CardSurface
     ) {
         Row(
             modifier = Modifier
@@ -407,7 +403,7 @@ fun GoalCardDynamicItem(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(if (goal.isCompleted) Color(0xFFE8F5E9) else iconBgColor)
+                            .background(if (goal.isCompleted) (if (isDarkTheme) LightGreenDark else Color(0xFFE8F5E9)) else iconBgColor)
                             .border(1.dp, if (goal.isCompleted) SuccessGreen.copy(alpha = 0.3f) else iconColor.copy(alpha = 0.2f), RoundedCornerShape(12.dp)),
                         contentAlignment = Alignment.Center
                     ) {
@@ -442,7 +438,7 @@ fun GoalCardDynamicItem(
 
                             // Status Tag
                             Surface(
-                                color = if (goal.isCompleted) LightGreen else Color(0xFFF0EFFF),
+                                color = if (goal.isCompleted) LightGreen else IconBoxBg,
                                 shape = RoundedCornerShape(6.dp)
                             ) {
                                 Text(
@@ -472,7 +468,7 @@ fun GoalCardDynamicItem(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFFF8F9FE))
+                                .background(SurfaceVariantColor)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -485,7 +481,7 @@ fun GoalCardDynamicItem(
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
-                            modifier = Modifier.background(White)
+                            modifier = Modifier.background(CardSurface)
                         ) {
                             DropdownMenuItem(
                                 text = { Text("Update Progress", color = TextDark, fontWeight = FontWeight.Medium, fontSize = 13.sp) },
@@ -503,7 +499,7 @@ fun GoalCardDynamicItem(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Delete", color = ErrorRed, fontWeight = FontWeight.Medium, fontSize = 13.sp) },
+                                text = { Text("Delete Goal", color = ErrorRed, fontWeight = FontWeight.Medium, fontSize = 13.sp) },
                                 onClick = {
                                     expanded = false
                                     onDelete()
@@ -523,104 +519,35 @@ fun GoalCardDynamicItem(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Mid Details Box (Target Date & Metric Info)
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    color = Color(0xFFF8FAFC)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp, vertical = 7.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.CalendarToday,
-                                contentDescription = null,
-                                tint = TextGray,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = goal.targetDate,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = TextDark
-                            )
-                        }
+                // Progress Bar
+                LinearProgressIndicator(
+                    progress = { displayProgress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .clip(CircleShape),
+                    color = cardAccentColor,
+                    trackColor = if (isDarkTheme) DividerColorDark else Color(0xFFF0F2F8)
+                )
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.BarChart,
-                                contentDescription = null,
-                                tint = PrimaryPurple,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "${goal.currentMetricValue} / ${goal.targetMetricValue}",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = PrimaryPurple
-                            )
-                        }
-                    }
-                }
+                Spacer(modifier = Modifier.height(6.dp))
 
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // Progress Bar Section
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Progress",
+                        text = "${goal.currentMetricValue} / ${goal.targetMetricValue}",
                         fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = TextGray
+                        fontWeight = FontWeight.Bold,
+                        color = TextDark
                     )
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "$progressPercentage%",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = cardAccentColor
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
-                            contentDescription = null,
-                            tint = cardAccentColor,
-                            modifier = Modifier.size(12.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(Color(0xFFEFF2F8))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(displayProgress)
-                            .fillMaxHeight()
-                            .clip(RoundedCornerShape(3.dp))
-                            .background(
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(cardAccentColor, cardAccentColor.copy(alpha = 0.75f))
-                                )
-                            )
+                    Text(
+                        text = "$progressPercentage%",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = cardAccentColor
                     )
                 }
             }
@@ -636,11 +563,11 @@ fun UpdateProgressBottomSheet(
     onSave: (String) -> Unit
 ) {
     var currentValue by remember { mutableStateOf(goal.currentMetricValue) }
-    
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = White,
+        containerColor = CardSurface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         dragHandle = {
             Box(
@@ -648,14 +575,14 @@ fun UpdateProgressBottomSheet(
                     .padding(top = 12.dp, bottom = 8.dp)
                     .size(width = 38.dp, height = 4.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE2E8F0))
+                    .background(DividerColor)
             )
         }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = 20.dp)
                 .navigationBarsPadding()
         ) {
             Row(
@@ -663,90 +590,60 @@ fun UpdateProgressBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "Update Progress",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextDark
-                    )
-                    Text(
-                        text = goal.title,
-                        fontSize = 14.sp,
-                        color = TextGray
-                    )
-                }
+                Text(
+                    text = "Update Goal Progress",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark
+                )
                 IconButton(onClick = onDismiss) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = TextGray)
+                    Icon(Icons.Default.Close, contentDescription = "Close", tint = TextDark)
                 }
             }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            Text(
-                text = "Current Value",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextDark
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("Current Progress Value", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextDark)
+            Spacer(modifier = Modifier.height(6.dp))
+
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(14.dp),
                 color = InputFieldBg,
-                border = androidx.compose.foundation.BorderStroke(1.dp, InputFieldBorder)
+                border = BorderStroke(1.dp, InputFieldBorder)
             ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
-                        contentDescription = null,
-                        tint = PrimaryPurple,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    BasicTextField(
-                        value = currentValue,
-                        onValueChange = { currentValue = it },
-                        cursorBrush = SolidColor(TextDark),
-                        textStyle = TextStyle(
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = TextDark
-                        ),
-                        modifier = Modifier.weight(1f),
-                        singleLine = true
-                    )
-                    Text(
-                        text = "/ ${goal.targetMetricValue}",
-                        fontSize = 16.sp,
-                        color = TextGray,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                BasicTextField(
+                    value = currentValue,
+                    onValueChange = { currentValue = it },
+                    cursorBrush = SolidColor(TextDark),
+                    textStyle = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextDark),
+                    decorationBox = { inner ->
+                        Box(modifier = Modifier.padding(14.dp)) {
+                            if (currentValue.isEmpty()) {
+                                Text("Enter value (e.g. 50)", fontSize = 15.sp, color = TextGray)
+                            }
+                            inner()
+                        }
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             Button(
-                onClick = { onSave(currentValue) },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                onClick = {
+                    onSave(currentValue.trim())
+                },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text(
-                    text = "Save Progress",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = White
-                )
+                Text("Update Progress", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
-            
-            Spacer(modifier = Modifier.height(24.dp))
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }

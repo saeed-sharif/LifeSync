@@ -18,19 +18,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dalgeer.lifeplanner.data.model.*
 import com.dalgeer.lifeplanner.presentation.uiState.UiState
 import com.dalgeer.lifeplanner.presentation.viewmodel.TaskViewModel
 import com.dalgeer.lifeplanner.ui.components.AppFloatingActionButton
-import com.dalgeer.lifeplanner.ui.screens.tasks.NewTaskBottomSheet
 import com.dalgeer.lifeplanner.ui.theme.*
 import org.koin.androidx.compose.koinViewModel
 
@@ -77,14 +73,13 @@ fun TasksScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(ScreenBackground)
-                .statusBarsPadding()
                 .padding(horizontal = PaddingLarge)
         ) {
             // FIXED Header
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 8.dp)
+                    .padding(top = 8.dp, bottom = 6.dp)
             ) {
                 Text(
                     text = "Tasks",
@@ -130,10 +125,10 @@ fun TasksScreen(
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = White,
-                    unfocusedContainerColor = White,
+                    focusedContainerColor = InputFieldBg,
+                    unfocusedContainerColor = InputFieldBg,
                     focusedBorderColor = PrimaryPurple,
-                    unfocusedBorderColor = DividerColor,
+                    unfocusedBorderColor = InputFieldBorder,
                     cursorColor = TextDark,
                     focusedTextColor = TextDark,
                     unfocusedTextColor = TextDark
@@ -181,7 +176,7 @@ fun TasksScreen(
                     val chips = listOf(
                         "Today" to dayFilteredTodayTasks.size.toString(),
                         "Priorities" to priorityTasks.size.toString(),
-                        "My Lists" to "2",
+                        "All Tasks" to tasks.size.toString(),
                         "Completed" to completedTasks.size.toString()
                     )
 
@@ -195,7 +190,7 @@ fun TasksScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(20.dp))
                                     .clickable { selectedFilterChip = chip },
-                                color = if (isSelected) PrimaryPurple else MaterialTheme.colorScheme.surfaceVariant,
+                                color = if (isSelected) PrimaryPurple else SurfaceVariantColor,
                                 shape = RoundedCornerShape(20.dp)
                             ) {
                                 Row(
@@ -206,7 +201,7 @@ fun TasksScreen(
                                         text = when (chip) {
                                             "Today" -> "📅 $chip"
                                             "Priorities" -> "🏳️ $chip"
-                                            "My Lists" -> "☰ $chip"
+                                            "All Tasks" -> "☰ $chip"
                                             else -> "☑️ $chip"
                                         },
                                         color = if (isSelected) Color.White else TextDark,
@@ -216,7 +211,7 @@ fun TasksScreen(
                                     if (count.isNotEmpty() && count != "0") {
                                         Spacer(modifier = Modifier.width(6.dp))
                                         Surface(
-                                            color = if (isSelected) Color.White.copy(alpha = 0.25f) else MaterialTheme.colorScheme.outlineVariant,
+                                            color = if (isSelected) Color.White.copy(alpha = 0.25f) else DividerColor,
                                             shape = CircleShape
                                         ) {
                                             Text(
@@ -235,7 +230,7 @@ fun TasksScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Date Strip Card Row (Sat 26, Sun 27, Mon 28, Tue 29, Wed 30 + Calendar Picker)
+                    // Date Strip Card Row
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -252,7 +247,7 @@ fun TasksScreen(
                                         .weight(1f)
                                         .clip(RoundedCornerShape(16.dp))
                                         .clickable { selectedDayIndex = index },
-                                    color = if (isSelected) PrimaryPurple else White,
+                                    color = if (isSelected) PrimaryPurple else CardSurface,
                                     shape = RoundedCornerShape(16.dp),
                                     border = if (!isSelected) BorderStroke(1.dp, DividerColor) else null,
                                     shadowElevation = if (isSelected) 4.dp else 0.dp
@@ -264,7 +259,7 @@ fun TasksScreen(
                                         Text(
                                             text = dayName,
                                             fontSize = 11.sp,
-                                            color = if (isSelected) White.copy(alpha = 0.85f) else TextGray,
+                                            color = if (isSelected) Color.White.copy(alpha = 0.85f) else TextGray,
                                             fontWeight = FontWeight.Medium
                                         )
                                         Spacer(modifier = Modifier.height(2.dp))
@@ -272,7 +267,7 @@ fun TasksScreen(
                                             text = dayNumber,
                                             fontSize = 15.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = if (isSelected) White else TextDark
+                                            color = if (isSelected) Color.White else TextDark
                                         )
                                     }
                                 }
@@ -287,7 +282,7 @@ fun TasksScreen(
                                 .size(44.dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .clickable { showCustomDatePicker = true },
-                            color = White,
+                            color = CardSurface,
                             shape = RoundedCornerShape(16.dp),
                             border = BorderStroke(1.dp, DividerColor)
                         ) {
@@ -312,7 +307,7 @@ fun TasksScreen(
                     ) {
                         when (selectedFilterChip) {
                             "Today" -> {
-                                // OVERDUE SECTION (if any overdue tasks exist)
+                                // OVERDUE SECTION
                                 if (overdueTasks.isNotEmpty()) {
                                     item {
                                         Row(
@@ -369,7 +364,7 @@ fun TasksScreen(
                                             )
                                         }
                                         Surface(
-                                            color = Color(0xFFF0EFFF),
+                                            color = IconBoxBg,
                                             shape = RoundedCornerShape(12.dp)
                                         ) {
                                             Text(
@@ -544,7 +539,7 @@ fun TasksScreen(
                             }
                             else -> {
                                 item {
-                                    Text("All Lists & Categories", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextDark)
+                                    Text("All Tasks & Categories", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextDark)
                                 }
                                 if (tasks.isEmpty()) {
                                     item {
@@ -635,8 +630,8 @@ fun TaskCardDynamicItem(
             )
             .clickable { onEdit() },
         shape = RoundedCornerShape(16.dp),
-        color = if (isHighlighted) Color(0xFFF4F0FF) else if (isOverdueStyle) Color(0xFFFFF0F0) else White,
-        border = if (isOverdueStyle) BorderStroke(1.dp, Color(0xFFFFD0D0)) else null
+        color = if (isHighlighted) (if (isDarkTheme) PrimaryContainerDark else Color(0xFFF4F0FF)) else if (isOverdueStyle) (if (isDarkTheme) Color(0xFF2C161D) else Color(0xFFFFF0F0)) else CardSurface,
+        border = if (isOverdueStyle) BorderStroke(1.dp, if (isDarkTheme) Color(0xFF4A1F2B) else Color(0xFFFFD0D0)) else BorderStroke(1.dp, DividerColor)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -647,55 +642,100 @@ fun TaskCardDynamicItem(
                 onCheckedChange = { onToggle() },
                 modifier = Modifier.size(24.dp)
             )
+
             Spacer(modifier = Modifier.width(8.dp))
 
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(task.category.getCategoryColor()),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = task.category.getCategoryIcon(),
-                    contentDescription = null,
-                    tint = task.category.getCategoryTint(),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
+            // Category Icon & Title
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = task.title,
-                    style = Typography.titleMedium,
-                    color = if (isCompleted) TextGray else TextDark,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    textDecoration = if (isCompleted) TextDecoration.LineThrough else null
+                    color = if (isCompleted) TextGray else TextDark,
+                    textDecoration = if (isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
                 )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "${task.category.name} • ${task.time}",
-                    style = Typography.bodySmall,
-                    color = TextGray
-                )
-            }
-
-            Column(horizontalAlignment = Alignment.End) {
-                Surface(
-                    color = if (isHigh) LightRed else Color(0xFFF5F5F5),
-                    shape = RoundedCornerShape(6.dp)
-                ) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = task.category.getCategoryIcon(),
+                        contentDescription = null,
+                        tint = task.category.getCategoryTint(),
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = if (isHigh) "HIGH PRIORITY" else task.priority.name.uppercase(),
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        color = if (isHigh) ErrorRed else TextGray,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
+                        text = task.category.name,
+                        fontSize = 11.sp,
+                        color = TextGray
                     )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = TextGray, modifier = Modifier.size(16.dp))
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Time & Priority Badges
+            Column(horizontalAlignment = Alignment.End) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Time Chip
+                    Surface(
+                        color = IconBoxBg,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Notifications,
+                                contentDescription = null,
+                                tint = PrimaryPurple,
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = task.time,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = PrimaryPurple
+                            )
+                        }
+                    }
+
+                    // Priority Chip
+                    Surface(
+                        color = if (isHigh) LightRed else SurfaceVariantColor,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = task.priority.name.uppercase(),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = if (isHigh) ErrorRed else TextGray,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                if (task.repeatOption != "Does not repeat" && task.repeatOption != "Doesn't repeat") {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Autorenew,
+                            contentDescription = null,
+                            tint = TextGray,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Text(
+                            text = task.repeatOption.replace("Every ", ""),
+                            fontSize = 10.sp,
+                            color = TextGray,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         }

@@ -16,11 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dalgeer.lifeplanner.data.model.*
@@ -50,7 +46,7 @@ fun TopProgressCard(
             )
             .clickable { onCardClick() },
         shape = RoundedCornerShape(CornerRadiusLarge),
-        color = White
+        color = CardSurface
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -65,7 +61,7 @@ fun TopProgressCard(
                     progress = { progress },
                     modifier = Modifier.fillMaxSize(),
                     color = PrimaryPurple,
-                    trackColor = Color(0xFFECEFF1),
+                    trackColor = if (isDarkTheme) DividerColorDark else Color(0xFFECEFF1),
                     strokeWidth = 6.dp,
                     strokeCap = StrokeCap.Round
                 )
@@ -129,7 +125,7 @@ fun TopProgressCard(
                 ) {
                     // Done Badge (Clickable to navigate to completed tasks)
                     Surface(
-                        color = Color(0xFFECFDF5),
+                        color = if (isDarkTheme) Color(0xFF064E3B).copy(alpha = 0.35f) else Color(0xFFECFDF5),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.clickable { onCompletedClick() }
                     ) {
@@ -141,13 +137,13 @@ fun TopProgressCard(
                                 modifier = Modifier
                                     .size(15.dp)
                                     .clip(CircleShape)
-                                    .background(Color(0xFF10B981)),
+                                    .background(SuccessGreen),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
-                                    tint = White,
+                                    tint = Color.White,
                                     modifier = Modifier.size(10.dp)
                                 )
                             }
@@ -156,7 +152,7 @@ fun TopProgressCard(
                                 text = "$completedCount Done",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF065F46),
+                                color = if (isDarkTheme) SuccessGreenDark else Color(0xFF065F46),
                                 maxLines = 1
                             )
                         }
@@ -164,7 +160,7 @@ fun TopProgressCard(
 
                     // Pending Badge
                     Surface(
-                        color = Color(0xFFFFFBEB),
+                        color = if (isDarkTheme) Color(0xFF3D2A12) else Color(0xFFFFFBEB),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Row(
@@ -181,7 +177,7 @@ fun TopProgressCard(
                                 Icon(
                                     imageVector = Icons.Outlined.Schedule,
                                     contentDescription = null,
-                                    tint = White,
+                                    tint = Color.White,
                                     modifier = Modifier.size(10.dp)
                                 )
                             }
@@ -190,7 +186,7 @@ fun TopProgressCard(
                                 text = "$pendingCount Pending",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF92400E),
+                                color = if (isDarkTheme) Color(0xFFFFB74D) else Color(0xFF92400E),
                                 maxLines = 1
                             )
                         }
@@ -198,7 +194,7 @@ fun TopProgressCard(
 
                     // Overdue Badge
                     Surface(
-                        color = Color(0xFFFEF2F2),
+                        color = if (isDarkTheme) LightRedDark else Color(0xFFFEF2F2),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Row(
@@ -216,7 +212,7 @@ fun TopProgressCard(
                                     text = "!",
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = White
+                                    color = Color.White
                                 )
                             }
                             Spacer(modifier = Modifier.width(3.dp))
@@ -249,8 +245,8 @@ fun OverdueTaskAlertCard(
             .fillMaxWidth()
             .clickable { onViewClick() },
         shape = RoundedCornerShape(CornerRadiusLarge),
-        color = Color(0xFFFFF0F0),
-        border = BorderStroke(1.dp, Color(0xFFFFD0D0))
+        color = if (isDarkTheme) Color(0xFF2C161D) else Color(0xFFFFF0F0),
+        border = BorderStroke(1.dp, if (isDarkTheme) Color(0xFF4A1F2B) else Color(0xFFFFD0D0))
     ) {
         Row(
             modifier = Modifier.padding(14.dp),
@@ -260,7 +256,7 @@ fun OverdueTaskAlertCard(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFFFD6D6)),
+                    .background(if (isDarkTheme) Color(0xFF3D1B24) else Color(0xFFFFD6D6)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -300,9 +296,9 @@ fun OverdueTaskAlertCard(
             Spacer(modifier = Modifier.width(8.dp))
 
             Surface(
-                color = White,
+                color = CardSurface,
                 shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(1.dp, Color(0xFFFFC0C0))
+                border = BorderStroke(1.dp, if (isDarkTheme) Color(0xFF4A1F2B) else Color(0xFFFFC0C0))
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
@@ -326,7 +322,6 @@ fun OverdueTaskAlertCard(
     }
 }
 
-
 @Composable
 fun UpNextTaskCardList(
     tasks: List<TaskModel>,
@@ -343,7 +338,7 @@ fun UpNextTaskCardList(
                 spotColor = PrimaryPurple.copy(alpha = 0.15f)
             ),
         shape = RoundedCornerShape(CornerRadiusLarge),
-        color = White
+        color = CardSurface
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             if (tasks.isEmpty()) {
@@ -404,9 +399,9 @@ fun UpNextTaskCardList(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                // Time Chip Badge (Purple Background with Bell Icon)
+                                // Time Chip Badge
                                 Surface(
-                                    color = Color(0xFFF0EFFF),
+                                    color = IconBoxBg,
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Row(
@@ -431,7 +426,7 @@ fun UpNextTaskCardList(
 
                                 // Priority Chip
                                 Surface(
-                                    color = if (isHigh) LightRed else Color(0xFFF1F5F9),
+                                    color = if (isHigh) LightRed else SurfaceVariantColor,
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Text(
@@ -490,12 +485,12 @@ fun HomeRoutineCard(routine: RoutineModel) {
     val iconVector = routine.timeOfDay.getRoutineIcon()
 
     val badgeBg = when (routine.timeOfDay) {
-        RoutineTimeOfDay.Morning -> Color(0xFFFFF3E0)
-        else -> Color(0xFFE8EAF6)
+        RoutineTimeOfDay.Morning -> if (isDarkTheme) Color(0xFF3D2612) else Color(0xFFFFF3E0)
+        else -> if (isDarkTheme) PrimaryContainerDark else Color(0xFFE8EAF6)
     }
     val badgeTextColor = when (routine.timeOfDay) {
-        RoutineTimeOfDay.Morning -> Color(0xFFF57C00)
-        else -> Color(0xFF3F51B5)
+        RoutineTimeOfDay.Morning -> if (isDarkTheme) Color(0xFFFFB74D) else Color(0xFFF57C00)
+        else -> if (isDarkTheme) AccentBlueDark else Color(0xFF3F51B5)
     }
 
     Surface(
@@ -506,7 +501,7 @@ fun HomeRoutineCard(routine: RoutineModel) {
                 shape = RoundedCornerShape(CornerRadiusLarge)
             ),
         shape = RoundedCornerShape(CornerRadiusLarge),
-        color = White
+        color = CardSurface
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
@@ -554,7 +549,7 @@ fun HomeRoutineCard(routine: RoutineModel) {
                     .height(4.dp)
                     .clip(CircleShape),
                 color = iconTint,
-                trackColor = Color(0xFFF0F2F8)
+                trackColor = if (isDarkTheme) DividerColorDark else Color(0xFFF0F2F8)
             )
 
             Spacer(modifier = Modifier.height(10.dp))

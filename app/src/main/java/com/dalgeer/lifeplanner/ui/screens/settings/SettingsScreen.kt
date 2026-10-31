@@ -1,7 +1,8 @@
 package com.dalgeer.lifeplanner.ui.screens.settings
 
 import android.app.Activity
-import android.provider.Settings
+import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,18 +28,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dalgeer.lifeplanner.data.preferences.AppPreferences
 import com.dalgeer.lifeplanner.presentation.uiState.UiState
 import com.dalgeer.lifeplanner.presentation.viewmodel.GoalViewModel
 import com.dalgeer.lifeplanner.presentation.viewmodel.RoutineViewModel
 import com.dalgeer.lifeplanner.presentation.viewmodel.TaskViewModel
-import com.dalgeer.lifeplanner.util.InAppReviewManager
-import com.dalgeer.lifeplanner.util.InAppUpdateManager
 import com.dalgeer.lifeplanner.ui.screens.profile.AVATAR_PRESETS
 import com.dalgeer.lifeplanner.ui.theme.*
-
+import com.dalgeer.lifeplanner.util.InAppReviewManager
+import com.dalgeer.lifeplanner.util.InAppUpdateManager
 import org.koin.androidx.compose.koinViewModel
+
+fun getAppVersionInfo(context: Context): String {
+    return try {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val versionName = packageInfo.versionName ?: "1.1"
+        val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            packageInfo.longVersionCode
+        } else {
+            @Suppress("DEPRECATION")
+            packageInfo.versionCode.toLong()
+        }
+        "v$versionName (Build $versionCode)"
+    } catch (e: Exception) {
+        "v1.1 (Build 2)"
+    }
+}
 
 @Composable
 fun SettingsScreen(
@@ -76,20 +91,20 @@ fun SettingsScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = PaddingLarge, vertical = PaddingMedium)
+            .padding(horizontal = PaddingLarge)
     ) {
         // Top Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp),
+                .padding(top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(White)
+                    .background(CardSurface)
                     .border(1.dp, DividerColor, CircleShape)
                     .clickable { onBack() },
                 contentAlignment = Alignment.Center
@@ -110,7 +125,7 @@ fun SettingsScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Profile Avatar & Edit Profile Card
         Surface(
@@ -123,7 +138,7 @@ fun SettingsScreen(
                     spotColor = PrimaryPurple.copy(alpha = 0.2f)
                 ),
             shape = RoundedCornerShape(24.dp),
-            color = White
+            color = CardSurface
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -156,7 +171,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Surface(
-                    color = Color(0xFFF0EFFF),
+                    color = IconBoxBg,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.clickable { onNavigateToEditProfile() }
                 ) {
@@ -234,7 +249,7 @@ fun SettingsScreen(
                         }
                     },
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = White,
+                        checkedThumbColor = Color.White,
                         checkedTrackColor = PrimaryPurple
                     )
                 )
@@ -380,7 +395,7 @@ fun SettingsScreen(
 
         SettingsCardRow(
             title = "Version & Build",
-            subtitle = "v1.0.0 (Production Release)",
+            subtitle = getAppVersionInfo(context),
             icon = Icons.Outlined.Info,
             iconTint = TextGray
         )
@@ -425,7 +440,7 @@ fun SettingsScreen(
                     Text("Cancel", color = PrimaryPurple)
                 }
             },
-            containerColor = White
+            containerColor = CardSurface
         )
     }
 }
@@ -468,7 +483,7 @@ fun SettingsCardRow(
             .clip(RoundedCornerShape(16.dp))
             .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
         shape = RoundedCornerShape(16.dp),
-        color = White,
+        color = CardSurface,
         border = androidx.compose.foundation.BorderStroke(1.dp, DividerColor)
     ) {
         Row(

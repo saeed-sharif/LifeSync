@@ -3,8 +3,12 @@ package com.dalgeer.lifeplanner
 import android.app.Application
 import androidx.work.*
 import com.dalgeer.lifeplanner.di.appModules
+import com.dalgeer.lifeplanner.util.AlarmScheduler
 import com.dalgeer.lifeplanner.util.NotificationHelper
 import com.dalgeer.lifeplanner.worker.DailyResetWorker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import java.util.Calendar
@@ -23,9 +27,19 @@ class LifePlannerApplication : Application() {
 
         // Initialize Notification Channels
         NotificationHelper.createNotificationChannels(this)
-        
+
         // Schedule Daily Habit Reset WorkManager at Midnight
         scheduleDailyResetWork()
+
+        // Safety net: Xiaomi and other OEMs can wipe alarms when the app is killed or updated.
+        // Re-arm every reminder each time the app process starts.
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                AlarmScheduler.rescheduleAll(this@LifePlannerApplication)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun scheduleDailyResetWork() {

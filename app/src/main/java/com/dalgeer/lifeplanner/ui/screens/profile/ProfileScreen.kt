@@ -27,11 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.dalgeer.lifeplanner.data.preferences.AppPreferences
 import com.dalgeer.lifeplanner.presentation.uiState.UiState
 import com.dalgeer.lifeplanner.presentation.viewmodel.GoalViewModel
 import com.dalgeer.lifeplanner.presentation.viewmodel.RoutineViewModel
 import com.dalgeer.lifeplanner.presentation.viewmodel.TaskViewModel
+import com.dalgeer.lifeplanner.ui.screens.settings.getAppVersionInfo
 import com.dalgeer.lifeplanner.ui.theme.*
 import org.koin.androidx.compose.koinViewModel
 
@@ -44,7 +45,11 @@ fun ProfileScreen(
     goalViewModel: GoalViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
-    var isNotificationsEnabled by remember { mutableStateOf(true) }
+    var isNotificationsEnabled by remember { mutableStateOf(AppPreferences.isNotificationsEnabled(context)) }
+    val userName = AppPreferences.getUserName(context)
+    val avatarIndex = AppPreferences.getUserAvatarIndex(context)
+    val avatarStyle = AVATAR_PRESETS.getOrElse(avatarIndex) { AVATAR_PRESETS[0] }
+    val initial = if (userName.isNotBlank()) userName.first().uppercase() else "A"
 
     val taskState by taskViewModel.uiState.collectAsStateWithLifecycle()
     val routineState by routineViewModel.uiState.collectAsStateWithLifecycle()
@@ -62,20 +67,20 @@ fun ProfileScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = PaddingLarge, vertical = PaddingMedium)
+            .padding(horizontal = PaddingLarge)
     ) {
         // Top Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp),
+                .padding(top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(White)
+                    .background(CardSurface)
                     .border(1.dp, DividerColor, CircleShape)
                     .clickable { onBack() },
                 contentAlignment = Alignment.Center
@@ -96,7 +101,7 @@ fun ProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Profile Avatar Card
         Surface(
@@ -109,7 +114,7 @@ fun ProfileScreen(
                     spotColor = PrimaryPurple.copy(alpha = 0.2f)
                 ),
             shape = RoundedCornerShape(24.dp),
-            color = White
+            color = CardSurface
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -119,21 +124,21 @@ fun ProfileScreen(
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFD0BCFF)),
+                        .background(avatarStyle.bgColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "A",
+                        text = initial,
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF381E72)
+                        color = avatarStyle.textColor
                     )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "Alex",
+                    text = userName,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextDark
@@ -142,7 +147,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Surface(
-                    color = Color(0xFFF0EFFF),
+                    color = IconBoxBg,
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
@@ -188,9 +193,12 @@ fun ProfileScreen(
             trailing = {
                 Switch(
                     checked = isNotificationsEnabled,
-                    onCheckedChange = { isNotificationsEnabled = it },
+                    onCheckedChange = {
+                        isNotificationsEnabled = it
+                        AppPreferences.setNotificationsEnabled(context, it)
+                    },
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = White,
+                        checkedThumbColor = Color.White,
                         checkedTrackColor = PrimaryPurple
                     )
                 )
@@ -232,7 +240,7 @@ fun ProfileScreen(
 
         SettingsCardItem(
             title = "App Language",
-            subtitle = "Change display language",
+            subtitle = AppPreferences.getSelectedLanguage(context),
             icon = Icons.Outlined.Language,
             iconTint = Color(0xFF00A878),
             onClick = onNavigateToLanguage
@@ -242,7 +250,7 @@ fun ProfileScreen(
 
         SettingsCardItem(
             title = "Theme / Appearance",
-            subtitle = "System default (Light Mode)",
+            subtitle = AppPreferences.getThemeMode(context),
             icon = Icons.Outlined.Palette,
             iconTint = Color(0xFFFF6B00)
         )
@@ -261,7 +269,7 @@ fun ProfileScreen(
 
         SettingsCardItem(
             title = "Version & Build",
-            subtitle = "v1.0.0 (Production Release)",
+            subtitle = getAppVersionInfo(context),
             icon = Icons.Outlined.Info,
             iconTint = TextGray
         )
@@ -308,7 +316,7 @@ fun SettingsCardItem(
             .clip(RoundedCornerShape(16.dp))
             .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
         shape = RoundedCornerShape(16.dp),
-        color = White,
+        color = CardSurface,
         border = androidx.compose.foundation.BorderStroke(1.dp, DividerColor)
     ) {
         Row(

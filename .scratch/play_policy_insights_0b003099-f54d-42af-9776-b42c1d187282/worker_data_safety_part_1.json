@@ -1,0 +1,59 @@
+{
+  "domain": "Data Safety and Privacy",
+  "findings": [
+    {
+      "psl_constant": "RACE_ETHNICITY",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/LifePlannerApplication.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/receiver/BootReceiver.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/receiver/NotificationActionReceiver.kt"
+      ],
+      "evidence": "No race or ethnicity data is collected, stored, or transmitted by the app. Analysis of LifePlannerApplication.kt, BootReceiver.kt, and NotificationActionReceiver.kt confirmed no reference or transfer of race/ethnicity data.",
+      "recommendation": "No action required. Race/Ethnicity data is neither collected nor transferred off-device.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "NAME",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/data/preferences/AppPreferences.kt"
+      ],
+      "evidence": "User name is stored locally in SharedPreferences (KEY_USER_NAME) via AppPreferences.kt for display in the app UI. No off-device transmission or network transfer was detected.",
+      "recommendation": "No action required. User name is stored strictly on-device for local app functionality.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "App functionality",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "PERFORMANCE_DIAGNOSTICS",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "app/src/main/java/com/dalgeer/lifeplanner/receiver/NotificationReceiver.kt",
+        "app/src/main/java/com/dalgeer/lifeplanner/util/PermissionUtils.kt"
+      ],
+      "evidence": "PowerManager usage in NotificationReceiver.kt and PermissionUtils.kt is strictly for local wake lock management during notification delivery and checking battery optimization settings. No performance or diagnostic data is collected or transmitted off-device.",
+      "recommendation": "No action required. PowerManager interaction is used purely for local system integration.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    }
+  ]
+}

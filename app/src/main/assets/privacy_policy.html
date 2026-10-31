@@ -145,9 +145,8 @@
         <p>LifeSync requests specific Android system permissions strictly to deliver core offline productivity features:</p>
         <ul>
             <li><strong>Post Notifications (android.permission.POST_NOTIFICATIONS):</strong> Used exclusively to present scheduled task alerts, habit reminders, and interactive actions ("Mark Done" and "Snooze").</li>
-            <li><strong>Exact Alarms (android.permission.SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM):</strong> Required to trigger reminders at the exact minute set by the user, even when the screen is off or the device is idle.</li>
+            <li><strong>Exact Alarms (android.permission.SCHEDULE_EXACT_ALARM):</strong> Required to trigger reminders at the exact minute set by the user, even when the screen is off or the device is idle.</li>
             <li><strong>Boot Completed (android.permission.RECEIVE_BOOT_COMPLETED):</strong> Used solely to reschedule your pending task and routine alarms automatically whenever your device restarts.</li>
-            <li><strong>Ignore Battery Optimizations (android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS):</strong> Allows you to prevent the OS battery saver from stopping scheduled habit alarms when LifeSync is closed.</li>
         </ul>
     </div>
 
@@ -162,8 +161,8 @@
     </div>
 
     <div class="section">
-        <div class="section-title"><span>5.</span> Zero Analytics & Third-Party Tracking</div>
-        <p>LifeSync does not integrate third-party analytics SDKs, user tracking services, ad networks, or data brokers. We do not track user behavior, monitor app usage, or display advertisements.</p>
+        <div class="section-title"><span>5.</span> App Analytics & Stability Reporting</div>
+        <p>LifeSync utilizes Google Analytics for Firebase and Firebase Crashlytics strictly to gather anonymous crash logs, performance diagnostics, and app stability metrics. This non-personally identifiable information helps us fix software bugs, prevent crashes, and enhance app performance. No personal task content, user profile data, or precise personal information is ever collected or sold.</p>
     </div>
 
     <div class="section">

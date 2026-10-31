@@ -1,6 +1,5 @@
 package com.dalgeer.lifeplanner.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -15,8 +14,9 @@ val ErrorRedLight = Color(0xFFFF7675)
 val LightRedLight = Color(0xFFFFECEC)
 val AccentBlueLight = Color(0xFF3F51B5)
 
-// Brand Colors (Dark Theme - Extracted from Screenshots)
-val PrimaryPurpleDark = Color(0xFF5A52FF)
+// Brand Colors (Dark Theme)
+val PrimaryPurpleDark = Color(0xFF8B7CFF)
+val PrimaryContainerDark = Color(0xFF292344)
 val LightPurpleDark = Color(0xFF241B3B)
 val SuccessGreenDark = Color(0xFF00E676)
 val LightGreenDark = Color(0xFF122C28)
@@ -31,44 +31,51 @@ val ScreenBackgroundLight = Color(0xFFF8F9FF)
 val WhiteLight = Color(0xFFFFFFFF)
 val DividerColorLight = Color(0xFFE1E2EC)
 
-// Text and UI (Dark Theme - Extracted from Screenshots)
-val TextDarkTheme = Color(0xFFFFFFFF)            // Pure / Bright White
-val TextGrayDarkTheme = Color(0xFF8E95A5)        // Soft Blue-Gray Muted Text
-val ScreenBackgroundDark = Color(0xFF0D0F18)     // Deep Midnight Dark Background
-val SurfaceDark = Color(0xFF141722)              // Dark Card Surface Navy
-val SurfaceVariantDark = Color(0xFF1A1F2E)       // Inner Details Box Dark Surface
-val DividerColorDark = Color(0xFF222738)         // Subtle Dark Slate Border
+// Text and UI (Dark Theme)
+val TextDarkTheme = Color(0xFFF5F5FA)
+val TextGrayDarkTheme = Color(0xFFA6ADBD)
+val ScreenBackgroundDark = Color(0xFF0D0F18)
+val SurfaceDark = Color(0xFF191C29)
+val SurfaceVariantDark = Color(0xFF222638)
+val WhiteDark = Color(0xFFFFFFFF)
+val DividerColorDark = Color(0xFF2A3040)
 
-// Dynamic Composable Adaptive Colors
+// Dynamic Composable Adaptive Color Helper
+val isDarkTheme: Boolean
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.colorScheme.background == ScreenBackgroundDark
+
+// Dynamic Adaptive Colors
 val PrimaryPurple: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (isSystemInDarkTheme()) PrimaryPurpleDark else PrimaryPurpleLight
+    get() = MaterialTheme.colorScheme.primary
 
 val LightPurple: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (isSystemInDarkTheme()) LightPurpleDark else LightPurpleLight
+    get() = MaterialTheme.colorScheme.primaryContainer
 
 val SuccessGreen: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (isSystemInDarkTheme()) SuccessGreenDark else SuccessGreenLight
+    get() = MaterialTheme.colorScheme.tertiary
 
 val LightGreen: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (isSystemInDarkTheme()) LightGreenDark else LightGreenLight
+    get() = if (isDarkTheme) LightGreenDark else LightGreenLight
 
 val ErrorRed: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (isSystemInDarkTheme()) ErrorRedDark else ErrorRedLight
+    get() = MaterialTheme.colorScheme.error
 
 val LightRed: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (isSystemInDarkTheme()) LightRedDark else LightRedLight
+    get() = if (isDarkTheme) LightRedDark else LightRedLight
 
 val TextDark: Color
     @Composable
@@ -85,10 +92,15 @@ val ScreenBackground: Color
     @ReadOnlyComposable
     get() = MaterialTheme.colorScheme.background
 
-val White: Color
+val CardSurface: Color
     @Composable
     @ReadOnlyComposable
     get() = MaterialTheme.colorScheme.surface
+
+val White: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = Color.White
 
 val DividerColor: Color
     @Composable
@@ -103,14 +115,14 @@ val SurfaceVariantColor: Color
 val InputFieldBg: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (MaterialTheme.colorScheme.background == ScreenBackgroundDark) SurfaceVariantDark else Color(0xFFF8F9FE)
+    get() = if (isDarkTheme) SurfaceVariantDark else Color(0xFFF8F9FE)
 
 val InputFieldBorder: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (MaterialTheme.colorScheme.background == ScreenBackgroundDark) DividerColorDark else Color(0xFFECEFF8)
+    get() = if (isDarkTheme) DividerColorDark else Color(0xFFECEFF8)
 
 val IconBoxBg: Color
     @Composable
     @ReadOnlyComposable
-    get() = if (MaterialTheme.colorScheme.background == ScreenBackgroundDark) LightPurpleDark else Color(0xFFF0EFFF)
+    get() = if (isDarkTheme) PrimaryContainerDark else Color(0xFFF0EFFF)

@@ -49,7 +49,7 @@ fun PrivacyPolicyScreen(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(White)
+                    .background(CardSurface)
                     .border(1.dp, DividerColor, CircleShape)
                     .clickable { onBack() },
                 contentAlignment = Alignment.Center
@@ -90,7 +90,7 @@ fun PrivacyPolicyScreen(
                     spotColor = PrimaryPurple.copy(alpha = 0.2f)
                 ),
             shape = RoundedCornerShape(20.dp),
-            color = White
+            color = CardSurface
         ) {
             Row(
                 modifier = Modifier.padding(18.dp),
@@ -100,7 +100,7 @@ fun PrivacyPolicyScreen(
                     modifier = Modifier
                         .size(52.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(PrimaryPurple.copy(alpha = 0.12f)),
+                        .background(IconBoxBg),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -151,8 +151,7 @@ fun PrivacyPolicyScreen(
             description = "LifeSync requests specific system permissions to function reliably:\n" +
                     "• Post Notifications: To display task reminders.\n" +
                     "• Exact Alarms: To trigger alarm reminders exactly at scheduled times.\n" +
-                    "• Receive Boot Completed: To reschedule pending alarms automatically after device restarts.\n" +
-                    "• Battery Restrictions: To prevent OS battery saver from missing scheduled habit alarms."
+                    "• Receive Boot Completed: To reschedule pending alarms automatically after device restarts."
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -211,7 +210,7 @@ fun PrivacyPolicyScreen(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            color = PrimaryPurple.copy(alpha = 0.08f),
+            color = IconBoxBg,
             border = BorderStroke(1.dp, PrimaryPurple.copy(alpha = 0.2f))
         ) {
             Column(
@@ -248,7 +247,7 @@ private fun PolicySectionItem(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = White,
+        color = CardSurface,
         border = BorderStroke(1.dp, DividerColor)
     ) {
         Column(
