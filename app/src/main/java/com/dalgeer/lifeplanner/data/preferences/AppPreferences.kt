@@ -30,12 +30,12 @@ object AppPreferences {
 
     fun getUserName(context: Context): String {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        return prefs.getString(KEY_USER_NAME, "Alex") ?: "Alex"
+        return prefs.getString(KEY_USER_NAME, "User") ?: "User"
     }
 
     fun setUserName(context: Context, name: String) {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putString(KEY_USER_NAME, name.ifBlank { "Alex" }).apply()
+        prefs.edit().putString(KEY_USER_NAME, name.ifBlank { "User" }).apply()
     }
 
     fun getUserAvatarIndex(context: Context): Int {

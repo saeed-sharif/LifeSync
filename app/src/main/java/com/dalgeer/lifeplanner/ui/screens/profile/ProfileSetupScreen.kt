@@ -45,7 +45,7 @@ fun ProfileSetupScreen(
     isEditMode: Boolean = false
 ) {
     val context = LocalContext.current
-    var name by remember { mutableStateOf(AppPreferences.getUserName(context)) }
+    var name by remember { mutableStateOf(if (isEditMode) AppPreferences.getUserName(context) else "") }
     var selectedAvatarIndex by remember { mutableIntStateOf(AppPreferences.getUserAvatarIndex(context)) }
 
     val currentAvatar = AVATAR_PRESETS.getOrElse(selectedAvatarIndex) { AVATAR_PRESETS[0] }
@@ -200,7 +200,7 @@ fun ProfileSetupScreen(
             // Save & Continue Button
             Button(
                 onClick = {
-                    val finalName = if (name.isNotBlank()) name.trim() else "Alex"
+                    val finalName = if (name.isNotBlank()) name.trim() else "User"
                     AppPreferences.setUserName(context, finalName)
                     AppPreferences.setUserAvatarIndex(context, selectedAvatarIndex)
                     onComplete()

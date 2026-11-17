@@ -1,6 +1,7 @@
 package com.dalgeer.lifeplanner.presentation.viewmodel
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalgeer.lifeplanner.data.local.AppDatabase
@@ -68,18 +69,34 @@ class TaskViewModel(
                                 "Every Month" -> "Next Month"
                                 else -> "Tomorrow"
                             }
-                            val nextTask = TaskModel(
-                                title = task.title,
-                                category = task.category,
-                                priority = task.priority,
-                                date = nextDateStr,
-                                time = task.time,
-                                notes = task.notes,
-                                repeatOption = task.repeatOption,
-                                status = TaskStatus.Pending
-                            )
-                            repository.addTask(nextTask)
-                            AlarmScheduler.scheduleTaskReminder(getApplication(), nextTask)
+                            
+                            // Check if a pending task with the same title and target date already exists
+                            val duplicateExists = tasks.any { t ->
+                                t.status == TaskStatus.Pending &&
+                                t.title.trim().equals(task.title.trim(), ignoreCase = true) &&
+                                t.date.trim().equals(nextDateStr.trim(), ignoreCase = true)
+                            }
+
+                            if (duplicateExists) {
+                                Toast.makeText(
+                                    getApplication(),
+                                    "Already next day task is generated",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                val nextTask = TaskModel(
+                                    title = task.title,
+                                    category = task.category,
+                                    priority = task.priority,
+                                    date = nextDateStr,
+                                    time = task.time,
+                                    notes = task.notes,
+                                    repeatOption = task.repeatOption,
+                                    status = TaskStatus.Pending
+                                )
+                                repository.addTask(nextTask)
+                                AlarmScheduler.scheduleTaskReminder(getApplication(), nextTask)
+                            }
                         }
                     } else {
                         AlarmScheduler.scheduleTaskReminder(getApplication(), task)

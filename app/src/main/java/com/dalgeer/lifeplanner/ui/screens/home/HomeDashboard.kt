@@ -45,6 +45,15 @@ fun HomeDashboard(
     val tasks = (taskState as? UiState.Success)?.data ?: emptyList()
     val routines = (routineState as? UiState.Success)?.data ?: emptyList()
 
+    val greetingText = remember {
+        val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+        when (hour) {
+            in 5..11 -> "Good morning,"
+            in 12..16 -> "Good afternoon,"
+            else -> "Good evening,"
+        }
+    }
+
     val currentDateStr = remember {
         java.text.SimpleDateFormat("EEEE, MMMM d", java.util.Locale.getDefault()).format(java.util.Date())
     }
@@ -64,7 +73,7 @@ fun HomeDashboard(
         ) {
             Column {
                 Text(
-                    text = "Good morning,",
+                    text = greetingText,
                     fontSize = 14.sp,
                     color = TextGray
                 )

@@ -33,6 +33,7 @@ import com.dalgeer.lifeplanner.data.model.getCategoryIcon
 import com.dalgeer.lifeplanner.data.model.getCategoryTint
 import com.dalgeer.lifeplanner.presentation.uiState.UiState
 import com.dalgeer.lifeplanner.presentation.viewmodel.TaskViewModel
+import com.dalgeer.lifeplanner.util.AlarmScheduler
 import com.dalgeer.lifeplanner.ui.theme.*
 import org.koin.androidx.compose.koinViewModel
 
@@ -49,6 +50,7 @@ fun TaskDetailScreen(
 
     var showMenu by remember { mutableStateOf(false) }
     var showEditSheet by remember { mutableStateOf(false) }
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
 
     if (task == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -101,36 +103,57 @@ fun TaskDetailScreen(
                 )
             }
 
-            Box {
-                IconButton(onClick = { showMenu = true }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Direct Visible Delete Button
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(ErrorRed.copy(alpha = 0.12f))
+                        .border(1.dp, ErrorRed.copy(alpha = 0.3f), CircleShape)
+                        .clickable { showDeleteConfirmDialog = true },
+                    contentAlignment = Alignment.Center
+                ) {
                     Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Options",
-                        tint = TextDark
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete Task",
+                        tint = ErrorRed,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false },
-                    modifier = Modifier.background(CardSurface)
-                ) {
-                    if (!isCompleted) {
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Box {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Options",
+                            tint = TextDark
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                        modifier = Modifier.background(CardSurface)
+                    ) {
+                        if (!isCompleted) {
+                            DropdownMenuItem(
+                                text = { Text("Edit Task", color = TextDark) },
+                                onClick = {
+                                    showMenu = false
+                                    showEditSheet = true
+                                }
+                            )
+                        }
                         DropdownMenuItem(
-                            text = { Text("Edit Task", color = TextDark) },
+                            text = { Text("Delete Task", color = ErrorRed) },
                             onClick = {
                                 showMenu = false
-                                showEditSheet = true
+                                showDeleteConfirmDialog = true
                             }
                         )
                     }
-                    DropdownMenuItem(
-                        text = { Text("Delete Task", color = ErrorRed) },
-                        onClick = {
-                            showMenu = false
-                            viewModel.deleteTask(task.id)
-                            onBack()
-                        }
-                    )
                 }
             }
         }
@@ -142,53 +165,7 @@ fun TaskDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = PaddingLarge)
         ) {
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Completed Banner Alert
-            if (isCompleted) {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    color = if (isDarkTheme) Color(0xFF064E3B).copy(alpha = 0.35f) else Color(0xFFECFDF5),
-                    border = BorderStroke(1.dp, if (isDarkTheme) SuccessGreen.copy(alpha = 0.4f) else Color(0xFFA7F3D0))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(SuccessGreen),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = "Task Completed ✓",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isDarkTheme) SuccessGreenDark else Color(0xFF065F46)
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "Great job! This task has been marked as finished.",
-                                fontSize = 11.sp,
-                                color = if (isDarkTheme) SuccessGreenDark.copy(alpha = 0.85f) else Color(0xFF047857)
-                            )
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Main Header Card
             Surface(
@@ -334,32 +311,179 @@ fun TaskDetailScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Toggle Mark Complete Button
+            val buttonBg = if (isCompleted) {
+                if (isDarkTheme) Color(0xFF064E3B) else Color(0xFFDCFCE7)
+            } else {
+                PrimaryPurple
+            }
+
+            val buttonTextColor = if (isCompleted) {
+                if (isDarkTheme) SuccessGreenDark else Color(0xFF15803D)
+            } else {
+                Color.White
+            }
+
+            val buttonBorder = if (isCompleted) {
+                BorderStroke(1.5.dp, if (isDarkTheme) SuccessGreen else Color(0xFF16A34A))
+            } else {
+                null
+            }
+
+            val isRepeating = AlarmScheduler.isRepeatingTask(task)
+            val isButtonEnabled = !isCompleted || !isRepeating
+
             Button(
                 onClick = { viewModel.toggleTaskStatus(task.id) },
+                enabled = isButtonEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp)
+                    .then(
+                        if (buttonBorder != null) Modifier.border(buttonBorder, RoundedCornerShape(16.dp)) else Modifier
+                    )
                     .shadow(
-                        elevation = 6.dp,
+                        elevation = if (isCompleted) 2.dp else 6.dp,
                         shape = RoundedCornerShape(16.dp),
-                        ambientColor = PrimaryPurple.copy(alpha = 0.3f),
-                        spotColor = PrimaryPurple.copy(alpha = 0.3f)
+                        ambientColor = if (isCompleted) SuccessGreen.copy(alpha = 0.3f) else PrimaryPurple.copy(alpha = 0.3f),
+                        spotColor = if (isCompleted) SuccessGreen.copy(alpha = 0.3f) else PrimaryPurple.copy(alpha = 0.3f)
                     ),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isCompleted) SurfaceVariantColor else PrimaryPurple
+                    containerColor = buttonBg,
+                    disabledContainerColor = buttonBg,
+                    disabledContentColor = buttonTextColor
                 )
             ) {
-                Text(
-                    text = if (isCompleted) "Mark as Incomplete" else "Mark as Complete ✓",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isCompleted) TextDark else Color.White
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    if (!isCompleted) {
+                        Icon(
+                            imageVector = Icons.Outlined.CheckCircle,
+                            contentDescription = null,
+                            tint = buttonTextColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Text(
+                        text = if (isCompleted) "Completed ✓" else "Mark as Complete",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = buttonTextColor
+                    )
+                }
+            }
+
+            // Completed Banner Alert (Shown BELOW the button)
+            if (isCompleted) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    color = if (isDarkTheme) Color(0xFF064E3B).copy(alpha = 0.35f) else Color(0xFFECFDF5),
+                    border = BorderStroke(1.dp, if (isDarkTheme) SuccessGreen.copy(alpha = 0.4f) else Color(0xFFA7F3D0))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(SuccessGreen),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Task Completed ✓",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isDarkTheme) SuccessGreenDark else Color(0xFF065F46)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Great job! This task has been marked as finished.",
+                                fontSize = 11.sp,
+                                color = if (isDarkTheme) SuccessGreenDark.copy(alpha = 0.85f) else Color(0xFF047857)
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
         }
+    }
+
+    if (showDeleteConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmDialog = false },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = CardSurface,
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(ErrorRed.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = null,
+                        tint = ErrorRed,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            },
+            title = {
+                Text(
+                    text = "Delete Task?",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to delete '${task.title}'? This action cannot be undone.",
+                    fontSize = 14.sp,
+                    color = TextGray
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteConfirmDialog = false
+                        viewModel.deleteTask(task.id)
+                        onBack()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = ErrorRed),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Delete", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { showDeleteConfirmDialog = false },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Cancel", color = TextGray)
+                }
+            }
+        )
     }
 
     if (showEditSheet) {
